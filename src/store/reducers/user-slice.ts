@@ -8,10 +8,14 @@ import { createSlice } from '@reduxjs/toolkit'
 
 export const userSlice = createSlice({
     name: 'user',
+    /**
+     * 初始化
+     */
     initialState: {
-        user: null,
-        isLoading: false,
-        error: null
+        accessToken: getAccessToken(),
+        username: '',
+        avatar: '',
+        permissions: []
     },
     reducers: {
         login: (state: any) => {

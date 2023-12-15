@@ -91,6 +91,6 @@ export function getCurrentRouter(currentPaths: any) {
  * @param {String} key
  * @returns
  */
-export function getCurrentLocaRouter(key: any) {
+export function getCurrentLocalRouter(key: any) {
   return routeMap.get(key);
 }

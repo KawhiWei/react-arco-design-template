@@ -1,19 +1,23 @@
 import { Navigate, useLocation } from 'react-router-dom';
+import { getUserInfoHandler, setPermission } from '../../store/actions/user';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { getCurrentLocalRouter } from '../../utils/router';
 import { setting } from '../../config/setting';
-import { useDispatch } from 'react-redux';
 
 const { loginInterception, title } = setting;
 
 const RequireAuth = ({ children }: any) => {
     const { pathname } = useLocation();
     const dispatch = useDispatch();
-    if (!store.getState().userReducer) {
+    const userReducer = useSelector((state: any) => state.userReducer);
+
+    if (!userReducer) {
         return children;
     }
-    const { accessToken, permissions } = store.getState().userReducer;
+    const { accessToken, permissions } = userReducer;
 
-    const localRouter = getCurrentLocaRouter(pathname);
+    const localRouter = getCurrentLocalRouter(pathname);
     // 窗口标题
     document.title = (localRouter ? localRouter.title + '-' : '') + title;
 
@@ -30,19 +34,20 @@ const RequireAuth = ({ children }: any) => {
 
             try {
                 if (!loginInterception) {
-                    // // settings.js loginInterception为false时，创建虚拟权限
-                    // dispatch(
-                    //     setPermission(['admin'], (data) => {
-                    //         permissionData = data;
-                    //     })
-                    // );
+                    let result = setPermission(['admin'], (data: any) => {
+                        permissionData = data;
+                    })
+                    dispatch(
+                        result
+                    );
                 } else {
-                    // dispatch(
-                    //     getUserInfoHandler((data) => {
-                    //         // eslint-disable-next-line no-unused-vars
-                    //         permissionData = data;
-                    //     })
-                    // );
+                    let userInfoResult = getUserInfoHandler((data: any) => {
+                        // eslint-disable-next-line no-unused-vars
+                        permissionData = data;
+                    })
+                    dispatch(
+                        userInfoResult
+                    );
                 }
             } catch {
                 console.log(22);
