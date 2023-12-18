@@ -14,7 +14,7 @@ import {
   SET_USERINFO
 } from '../../store/action_types';
 import { Message, Notification } from '@arco-design/web-react';
-import { getUserInfo, login } from '@/api/user';
+import { getUserInfo, login } from '../../api/user';
 
 import { setRoutersHandler } from './router';
 import { setting } from '../../config/setting';

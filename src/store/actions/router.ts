@@ -1,5 +1,4 @@
 import { SET_ROUTERS } from '../../store/action_types';
-import { getRouters } from '@/api/routers';
 
 /**
  * @description 获取路由
@@ -7,7 +6,9 @@ import { getRouters } from '@/api/routers';
  * @returns
  */
 export const setRoutersHandler = () => async (dispatch: any) => {
-  const { data } = await getRouters();
+  const { data } = {
+    data: []
+  };
   dispatch({
     type: SET_ROUTERS,
     payload: data
