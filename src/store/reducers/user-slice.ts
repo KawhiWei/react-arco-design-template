@@ -4,32 +4,31 @@ import {
     setAccessToken
 } from '../../utils/accessToken';
 
+import type { PayloadAction } from '@reduxjs/toolkit'
 import { createSlice } from '@reduxjs/toolkit'
 
-export const userSlice = createSlice({
-    name: 'user',
+export interface AccessTokenState {
+    accessToken: string
+}
+
+export const accessTokenSlice = createSlice({
+    name: 'accessToken',
     /**
      * 初始化
      */
     initialState: {
         accessToken: getAccessToken(),
-        username: '',
-        avatar: '',
-        permissions: []
-    },
+    } as AccessTokenState,
     reducers: {
-        login: (state: any) => {
-            state.isLoading = true
+        setAccessToken: (state: AccessTokenState, action: PayloadAction<string>) => {
+            debugger
+            state.accessToken = action.payload;
+            setAccessToken(action.payload);
         },
-        logout: () => {
+        removeAccessToken: () => {
             removeAccessToken();
-        },
-        setAccessToken: (_accessToken: any) => {
-            setAccessToken(_accessToken)
         },
     }
 })
 
-export const { login } = userSlice.actions
-const userReducer = userSlice.reducer;
-export default userReducer;
+export const accessTokenActions = accessTokenSlice.actions

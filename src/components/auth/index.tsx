@@ -8,8 +8,10 @@ import { setting } from '../../config/setting';
 const { loginInterception, title } = setting;
 
 const RequireAuth = ({ children }: any) => {
+    debugger
     const { pathname } = useLocation();
     const dispatch = useDispatch();
+    
     const userReducer = useSelector((state: any) => state.userReducer);
 
     if (!userReducer) {

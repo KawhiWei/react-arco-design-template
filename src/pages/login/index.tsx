@@ -16,9 +16,8 @@ import {
   IconWechat
 } from '@arco-design/web-react/icon';
 
-import { loginHandler } from '@/store/actions/user';
-import store from '@/store';
-import { useDispatch } from 'react-redux';
+import { accessTokenActions } from '../../store/reducers/user-slice'
+import store from '../../store/index';
 import { useNavigate } from 'react-router-dom';
 
 // 路由
@@ -32,15 +31,13 @@ import { useNavigate } from 'react-router-dom';
 
 
 export default function Login() {
-  const dispatch = useDispatch();
-
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
-  const handleSubmit = async (formItem:any) => {
-    await dispatch(loginHandler(formItem));
-    const { accessToken } = store.getState().userReducer;
-    if (accessToken) navigate('/dashboard/workplace');
+  const handleSubmit = async (formItem: any) => {
+    store.dispatch(accessTokenActions.setAccessToken("abcdefg001"));
+    navigate('/dashboard/workplace');
+
   };
   return (
     <div className="login-wrap">
