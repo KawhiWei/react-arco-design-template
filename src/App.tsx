@@ -46,11 +46,11 @@ const App = () => {
               contextVal.setTheme
             },
           }}>
-            {/* <BrowserRouter basename="/arco-admin-template">
+            <BrowserRouter>
               <RenderRouter />
-            </BrowserRouter> */}
-            <span>{accessToken.accessToken}</span>
-            <Button type='primary' onClick={testLogin}>Primary Token</Button>
+            </BrowserRouter>
+            {/* <span>{accessToken.accessToken}</span>
+            <Button type='primary' onClick={testLogin}>Primary Token</Button> */}
           </GlobalContext.Provider>
         </ConfigProvider>
       </div>

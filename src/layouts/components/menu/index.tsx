@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Menu } from '@arco-design/web-react';
 import { SubMenuComponent } from '../sub-menu';
 import useLocale from '../../../utils/useLocale';
+import { useSelector } from 'react-redux';
 
 const MenuItem = Menu.Item;
 
 const MenuComponent = () => {
+  debugger
   const routerReducer = useSelector((state: any) => state.routerReducer);
   const t = useLocale();
 
@@ -17,10 +18,8 @@ const MenuComponent = () => {
   const [routerList, setRouterList] = useState([]);
   const [selectRouter, setSelectRouter] = useState('home');
   const [openKeys, setOpenKeys] = useState(['/dashboard', '/multi']);
-
   // const local = useLocation();
   useEffect(() => {
-    debugger
     const { routers } = routerReducer;
     setRouterList(routers);
   }, []);

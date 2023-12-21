@@ -14,6 +14,7 @@ import { IconPoweroff, IconUser } from '@arco-design/web-react/icon';
 
 
 const AvatarComponent = () => {
+  debugger
   // const dispatch = useDispatch();
 
   const iconStyle = {
