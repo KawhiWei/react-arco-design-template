@@ -5,18 +5,10 @@ import {
 } from '@arco-design/web-react';
 import { IconPoweroff, IconUser } from '@arco-design/web-react/icon';
 
-// import { useDispatch } from 'react-redux';
-
-// import React from 'react';
-
-
-//import { logout } from '@/store/actions/user';
-
+import { accessTokenActions } from '@/store/reducers/user-slice'
+import store from '@/store/index';
 
 const AvatarComponent = () => {
-  
-  // const dispatch = useDispatch();
-
   const iconStyle = {
     marginRight: 8,
     fontSize: 16,
@@ -25,7 +17,7 @@ const AvatarComponent = () => {
 
   const handleClickMenuItem = (key: string) => {
     if (key === 'logout') {
-      // dispatch(logout());
+      store.dispatch(accessTokenActions.removeAccessToken());
     };
   }
   return (

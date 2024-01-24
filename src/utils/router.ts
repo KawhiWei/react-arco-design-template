@@ -77,7 +77,7 @@ export function removeRoutersStore() {
  * @param {*} currentPaths 当前路由层级
  * @returns list
  */
-export function getCurrentRouter(currentPaths: any) {
+export function getCurrentRouter(currentPaths: Array<string>):Array<string> {
   const list = [];
   for (let i = 0; i < currentPaths.length; i++) {
     const currentKey = currentPaths.slice(0, i * 1 + 1).join('/');
