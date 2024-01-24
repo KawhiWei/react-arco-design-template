@@ -18,7 +18,7 @@ const App = () => {
   const contextVal = { lang, setLang, theme, setTheme };
 
   const testLogin = () => {
-    debugger
+    
     store.dispatch(accessTokenActions.setAccessToken("abcdefg001"));
   };
 

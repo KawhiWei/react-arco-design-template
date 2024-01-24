@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom';
 
 
 const BreadcrumbComponent = () => {
-  debugger
+  
   const [breadcrumbs, setBreadCrumbs] = useState([]);
   const { pathname } = useLocation();
 

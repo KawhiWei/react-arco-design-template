@@ -40,7 +40,7 @@ import screenfull from 'screenfull';
 const FormItem = Form.Item;
 
 const NavBarItemComponent = () => {
-  debugger
+  
   const [isSchemafull, setScreenfull] = useState(false);
   const [isRefresh, setRefresh] = useState(true);
   const [theme, setTheme] = useState('light');

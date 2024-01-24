@@ -16,10 +16,12 @@ import {
   IconWechat
 } from '@arco-design/web-react/icon';
 
-import { accessTokenActions } from '../../store/reducers/user-slice'
+import { accessTokenActions } from '@/store/reducers/user-slice'
+import { setRouters } from '@/store/reducers/router'
 import store from '../../store/index';
+// import { loginHandler } from '@/store/actions/user';
 import { useNavigate } from 'react-router-dom';
-
+import { useDispatch } from 'react-redux';
 // 路由
 
 // redux
@@ -33,9 +35,27 @@ import { useNavigate } from 'react-router-dom';
 export default function Login() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (formItem: any) => {
     store.dispatch(accessTokenActions.setAccessToken("abcdefg001"));
+
+    const { data } = {
+      data: [
+        {
+          path: '/dashboard',
+          key: 'dashboard',
+          children: [
+            {
+              path: 'workplace',
+              key: 'workplace'
+            }
+          ]
+        },
+      ]
+    };
+    console.log('data:', data)
+    dispatch(setRouters(data));
     navigate('/dashboard/workplace');
 
   };

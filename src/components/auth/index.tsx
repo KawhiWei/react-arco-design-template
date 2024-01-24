@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 const { loginInterception, title } = setting;
 
 const RequireAuth = ({ children }: any) => {
-    debugger
+    
     const accessToken = useSelector((state: RootState) => state.accessToken);
     const { pathname } = useLocation();
 

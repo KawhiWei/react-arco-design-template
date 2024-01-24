@@ -4,18 +4,17 @@ import {
   IconDashboard,
   IconMenu
 } from '@arco-design/web-react/icon';
-import React, { Suspense, lazy } from 'react';
+import { Suspense, lazy } from 'react';
 
-import EmptyLayout from '../layouts/empty-layout';
-import LayoutPage from '../layouts';
-import LoadingComponent from '../components/loading';
-import RequireAuth from '../components/auth';
+import EmptyLayout from '@/layouts/empty-layout';
+import LayoutPage from '@/layouts';
+import LoadingComponent from '@/components/loading';
+import RequireAuth from '@/components/auth';
 import { useRoutes } from 'react-router-dom';
 
-const Login = lazy(() => import('../pages/login'));
+const Login = lazy(() => import('@/pages/login'));
 const load = (children: any) => <Suspense fallback={<LoadingComponent />}>{children}</Suspense>;
-
-
+const Workplace = lazy(() => import('@/pages/dashboard/workplace'));
 
 const requirePublicLayout = () => (
   <RequireAuth>
@@ -44,6 +43,27 @@ const routeList = [
       }
     ]
   },
+  {
+    path: '/dashboard',
+    key: '/dashboard',
+    element: requirePublicLayout(),
+    meta: {
+      name: 'menu.dashboard',
+      title: '仪表盘',
+      icon: <IconDashboard/>
+    },
+    children: [
+      {
+        path: 'workplace',
+        key: '/dashboard/workplace',
+        element: load(<Workplace />),
+        meta: {
+          name: 'menu.dashboard.workplace',
+          title: '工作台'
+        }
+      },
+    ]
+  }
 ];
 
 const RenderRouter = () => {

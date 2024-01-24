@@ -18,7 +18,7 @@ const { Header } = Layout;
 const { Footer } = Layout;
 const { Content } = Layout;
 const PublicLayout = () => {
-    debugger
+    
     const [collapsed, setCollapsed] = useState(false);
     const handleCollapsed = () => {
         setCollapsed(!collapsed);

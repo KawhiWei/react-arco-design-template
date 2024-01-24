@@ -1,8 +1,8 @@
-import AvatarComponent from './navbar-item';
-import BreadcrumbComponent from './avatar';
+import AvatarComponent from './avatar';
+import NavBarItemComponent from './navbar-item';
 import LogoComponent from './logo';
 import MenuComponent from './menu';
-import NavBarItemComponent from './breadcrumb';
+import BreadcrumbComponent from './breadcrumb';
 
 export {
     LogoComponent,

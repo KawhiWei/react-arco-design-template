@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 const MenuItem = Menu.Item;
 
 const MenuComponent = () => {
-  debugger
+  
   const routerReducer = useSelector((state: any) => state.routerReducer);
   const t = useLocale();
 
@@ -21,6 +21,7 @@ const MenuComponent = () => {
   // const local = useLocation();
   useEffect(() => {
     const { routers } = routerReducer;
+    console.log(routerReducer, 'routes------')
     setRouterList(routers);
   }, []);
 
@@ -52,7 +53,7 @@ const MenuComponent = () => {
         return (
           <MenuItem key={item.key}>
             {item.meta.icon ? item.meta.icon : ''}
-            {/* {t[item.meta.name]} */}
+            {t[item.meta.name]}
           </MenuItem>
         );
       })}
