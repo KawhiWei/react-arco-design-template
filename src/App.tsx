@@ -1,26 +1,16 @@
-import { Button, ConfigProvider } from '@arco-design/web-react';
-import store, { RootState } from './store';
-
 import { BrowserRouter } from 'react-router-dom';
+import { ConfigProvider } from '@arco-design/web-react';
 import { GlobalContext } from './context';
 import RenderRouter from './routers';
-import { accessTokenActions } from './store/reducers/user-slice'
 import enUS from '@arco-design/web-react/es/locale/en-US';
-import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import zhCN from '@arco-design/web-react/es/locale/zh-CN';
 
 const App = () => {
-  const accessToken = useSelector((state: RootState) => state.accessToken);
   const [lang, setLang] = useState('zh-CN');
   const [theme, setTheme] = useState('light');
 
   const contextVal = { lang, setLang, theme, setTheme };
-
-  const testLogin = () => {
-    
-    store.dispatch(accessTokenActions.setAccessToken("abcdefg001"));
-  };
 
   const getLocale = () => {
     switch (lang) {

@@ -7,24 +7,16 @@ import {
     MenuComponent,
     NavBarItemComponent
 } from './components';
-import { IconMenuFold, IconMenuUnfold } from '@arco-design/web-react/icon';
-import React, { useState } from 'react';
 
 import { Layout } from '@arco-design/web-react';
 import { Outlet } from 'react-router-dom';
+import React from 'react';
 
 const { Sider } = Layout;
 const { Header } = Layout;
 const { Footer } = Layout;
 const { Content } = Layout;
 const PublicLayout = () => {
-    const [width, setWidth] = useState(240);
-    const [collapsed, setCollapsed] = useState(false);
-    const handleCollapsed = () => {
-        setCollapsed(!collapsed);
-    };
-
-
     return (
         <Layout className="layout-container">
             <Header className="layout-header">

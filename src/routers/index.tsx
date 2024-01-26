@@ -1,12 +1,9 @@
-import {
-  IconBug,
-  IconCodeSquare,
-  IconDashboard,
-  IconMenu
-} from '@arco-design/web-react/icon';
 import { Suspense, lazy } from 'react';
 
 import EmptyLayout from '@/layouts/empty-layout';
+import {
+  IconDashboard
+} from '@arco-design/web-react/icon';
 import LayoutPage from '@/layouts';
 import LoadingComponent from '@/components/loading';
 import RequireAuth from '@/components/auth';
