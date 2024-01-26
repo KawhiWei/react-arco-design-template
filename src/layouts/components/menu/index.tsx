@@ -18,7 +18,7 @@ const MenuComponent = () => {
   const [routerList, setRouterList] = useState([]);
   const [selectRouter, setSelectRouter] = useState('home');
   const [openKeys, setOpenKeys] = useState(['/dashboard', '/multi']);
-  // const local = useLocation();
+  const [width, setWidth] = useState(240);
   useEffect(() => {
     const { routers } = routerReducer;
     console.log(routerReducer, 'routes------')
@@ -42,9 +42,9 @@ const MenuComponent = () => {
       onClickSubMenu={(_, openKeys) => {
         setOpenKeys(openKeys);
       }}
-      style={{
-        width: '100%'
-      }}
+      
+      hasCollapseButton
+      style={{ width: width, height: 'calc(100% - 28px)' }}
     >
       {routerList.map((item: any) => {
         if (item.children) {

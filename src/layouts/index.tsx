@@ -18,7 +18,7 @@ const { Header } = Layout;
 const { Footer } = Layout;
 const { Content } = Layout;
 const PublicLayout = () => {
-    
+    const [width, setWidth] = useState(240);
     const [collapsed, setCollapsed] = useState(false);
     const handleCollapsed = () => {
         setCollapsed(!collapsed);
@@ -35,14 +35,7 @@ const PublicLayout = () => {
                 </div>
             </Header>
             <Layout className="layout-main-wrap">
-                <Sider
-                    width="240"
-                    collapsed={collapsed}
-                    collapsible
-                    onCollapse={handleCollapsed}
-                    trigger={collapsed ? <IconMenuUnfold /> : <IconMenuFold />}
-                    breakpoint="xl"
-                >
+                <Sider width="240" breakpoint="xl">
                     <MenuComponent />
                 </Sider>
                 <Content className="layout-content">

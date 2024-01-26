@@ -60,8 +60,15 @@ export function filterRouters(localList: any, reqList: any) {
   return list;
 }
 export function getRoutersStore() {
-  const localRouterList = JSON.parse(localStorageGet('routerList'));
-  if (!localRouterList) return [];
+  debugger
+  let routerListStr = localStorageGet('routerList');
+  if (!routerListStr) {
+    return [];
+  }
+  const localRouterList = JSON.parse(routerListStr);
+  if (!localRouterList) {
+    return [];
+  }
   return filterRouters(localRouters, localRouterList);
 }
 export function setRoutersStore(routerList: any) {
@@ -77,7 +84,7 @@ export function removeRoutersStore() {
  * @param {*} currentPaths 当前路由层级
  * @returns list
  */
-export function getCurrentRouter(currentPaths: Array<string>):Array<string> {
+export function getCurrentRouter(currentPaths: Array<string>): Array<string> {
   const list = [];
   for (let i = 0; i < currentPaths.length; i++) {
     const currentKey = currentPaths.slice(0, i * 1 + 1).join('/');
