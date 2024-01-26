@@ -1,16 +1,13 @@
-import { Suspense, lazy } from 'react';
-
 import EmptyLayout from '@/layouts/empty-layout';
 import {
   IconDashboard
 } from '@arco-design/web-react/icon';
 import LayoutPage from '@/layouts';
-import LoadingComponent from '@/components/loading';
 import RequireAuth from '@/components/auth';
+import { lazy } from 'react';
 import { useRoutes } from 'react-router-dom';
 
 const Login = lazy(() => import('@/pages/login'));
-const load = (children: any) => <Suspense fallback={<LoadingComponent />}>{children}</Suspense>;
 const Workplace = lazy(() => import('@/pages/dashboard/workplace'));
 
 const requirePublicLayout = () => (
@@ -33,7 +30,7 @@ const routeList = [
       {
         index: true,
         key: 'login',
-        element: load(<Login />),
+        element: <Login />,
         meta: {
           title: '登录'
         }
@@ -53,7 +50,7 @@ const routeList = [
       {
         path: 'workplace',
         key: '/dashboard/workplace',
-        element: load(<Workplace />),
+        element: <Workplace />,
         meta: {
           name: 'menu.dashboard.workplace',
           title: '工作台'

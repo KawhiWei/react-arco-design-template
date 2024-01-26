@@ -62,7 +62,8 @@ export function filterRouters(localList: any, reqList: any) {
 export function getRoutersStore() {
   const localRouterList = JSON.parse(localStorageGet('routerList'));
   if (!localRouterList) return [];
-  return filterRouters(localRouters, localRouterList);
+  let allRouters = localRouters;
+  return filterRouters(allRouters, localRouterList);
 }
 export function setRoutersStore(routerList: any) {
   return localStorageSet('routerList', routerList);
