@@ -9,62 +9,42 @@ import {
   localStorageSet
 } from './index';
 
-import { localRouters } from '../routers';
+import { lazy } from 'react';
 
 const routeMap = new Map();
 
-/**
- * @description 根据后端配置路由过滤
- * @param {Array} localList 本地路由列表
- * @param {Array} reqList  请求路由列表
- * @returns
- */
-export function filterRouters(localList: any, reqList: any) {
-  const list: any = [];
-  // 判断接口返回的路由数组
-  reqList.map((item: any, index: any) => {
-    // 多层结构处理
-    if (item.children) {
-      // 获取本地路由配置的下标
-      const localRouterIndex = localList.findIndex((option: any) => item.path === option.path);
-      // 如果存在就添加到路由中
-      if (localRouterIndex !== -1) {
-        const localItem = localList[localRouterIndex];
-        const { key, element, meta, path } = localItem;
-        routeMap.set(`${key}`, meta);
-        list[index] = {
-          path,
-          key,
-          element,
-          meta
-        };
-        // 适配多级菜单 filterRouters
-        list[index].children = filterRouters(localItem.children, item.children);
-      }
-    } else {
-      // 单层接口处理
-      const localRouterIndex = localList.findIndex((option: any) => item.path === option.path);
-      if (localRouterIndex !== -1) {
-        // 获取本地的参数属性存入路由中
-        const { key, element, meta, path } = localList[localRouterIndex];
-        routeMap.set(`${key}`, meta);
-        return list.push({
-          key,
-          element,
-          meta,
-          path
-        });
-      }
-    }
-  });
-  return list;
-}
 export function getRoutersStore() {
-  const localRouterList = JSON.parse(localStorageGet('routerList'));
-  if (!localRouterList) return [];
-  let allRouters = localRouters;
-  return filterRouters(allRouters, localRouterList);
+  const localRouterList = JSON.parse(localStorageGet('routerList') ?? "[]");
+  if (!localRouterList) {
+    return []
+  };
+  return buildMenuByRouters(localRouterList)
 }
+export function buildMenuByRouters(routers: Array<any>) {
+  const list: any = []
+  routers.map((item: any, index: number) => {
+    const { path, key, element, meta } = item
+
+    const ele = {
+      path,
+      key,
+      element: lazy(() => import(`@/pages/${element}`)),
+      meta
+    }
+    if (item.children) {
+      list.push(ele)
+      list[index].children = buildMenuByRouters(item.children)
+    } else {
+      list.push({
+        ...ele,
+        children: null
+      })
+    }
+  })
+
+  return list
+}
+
 export function setRoutersStore(routerList: any) {
   return localStorageSet('routerList', routerList);
 }

@@ -19,9 +19,12 @@ import {
 import { accessTokenActions } from '@/store/reducers/user-slice'
 import { setRouters } from '@/store/reducers/router'
 import store from '../../store/index';
-// import { loginHandler } from '@/store/actions/user';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
+// import { loginHandler } from '@/store/actions/user';
+
+
 // 路由
 
 // redux
@@ -45,10 +48,20 @@ export default function Login() {
         {
           path: '/dashboard',
           key: 'dashboard',
+          element: 'requirePublicLayout',
+          meta: {
+            name: 'menu.dashboard',
+            title: '仪表盘',
+          },
           children: [
             {
               path: 'workplace',
-              key: 'workplace'
+              key: '/dashboard/workplace',
+              element: '/dashboard/workplace',
+              meta: {
+                name: 'menu.dashboard.workplace',
+                title: '工作台'
+              }
             }
           ]
         },

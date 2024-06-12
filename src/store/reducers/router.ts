@@ -1,9 +1,11 @@
 // 引入action_type
 // import { SET_ROUTERS } from '@/store/action_types';
+
 import {
-  getRoutersStore, setRoutersStore, filterRouters
+  getRoutersStore,
+  setRoutersStore
 } from '@/utils/router';
-import { localRouters } from '@/routers';
+
 import { createSlice } from '@reduxjs/toolkit';
 
 export const routerReducer = createSlice({
@@ -14,9 +16,8 @@ export const routerReducer = createSlice({
   },
   reducers: {
     setRouters(state, action) {
-      const routers = filterRouters(localRouters, action.payload);
-      setRoutersStore(routers);
-      state.routers = routers
+      setRoutersStore(action.payload);
+      state.routers = action.payload
     }
   }
 })
