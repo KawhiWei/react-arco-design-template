@@ -9,6 +9,7 @@ import { useRoutes } from 'react-router-dom';
 
 const Login = lazy(() => import('@/pages/login'));
 const Workplace = lazy(() => import('@/pages/dashboard/workplace'));
+const TestPage = lazy(() => import('@/pages/dashboard/test'));
 
 const requirePublicLayout = () => (
   <RequireAuth>
@@ -54,6 +55,15 @@ const routeList = [
         meta: {
           name: 'menu.dashboard.workplace',
           title: '工作台'
+        }
+      },
+      {
+        path: 'testPage',
+        key: '/dashboard/test',
+        element: <TestPage />,
+        meta: {
+          name: 'menu.dashboard.test',
+          title: '测试页面'
         }
       },
     ]

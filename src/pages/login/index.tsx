@@ -22,19 +22,6 @@ import store from '../../store/index';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-// import { loginHandler } from '@/store/actions/user';
-
-
-// 路由
-
-// redux
-
-// store
-
-
-
-
-
 export default function Login() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -61,6 +48,15 @@ export default function Login() {
               meta: {
                 name: 'menu.dashboard.workplace',
                 title: '工作台'
+              }
+            },
+            {
+              path: 'testPage',
+              key: '/dashboard/test',
+              element: '/dashboard/test',
+              meta: {
+                name: 'menu.dashboard.test',
+                title: '测试页面'
               }
             }
           ]

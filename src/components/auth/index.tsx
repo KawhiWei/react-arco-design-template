@@ -26,6 +26,7 @@ const RequireAuth = ({ children }: any) => {
 
     // 登录状态
     if (accessToken) {
+        debugger
         // 登录状态到登录页自动呢跳转到首页
         if (pathname === '/') {
             return <Navigate to="/dashboard/workplace" replace />;

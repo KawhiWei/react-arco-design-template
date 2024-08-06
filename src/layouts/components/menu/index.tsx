@@ -42,7 +42,7 @@ const MenuComponent = () => {
       onClickSubMenu={(_, openKeys) => {
         setOpenKeys(openKeys);
       }}
-      
+
       hasCollapseButton
       style={{ width: width, height: 'calc(100% - 28px)' }}
     >

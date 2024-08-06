@@ -1,4 +1,4 @@
 const Workplace = () => {
-  return <div>11111</div>
+  return <div>workplace</div>
 }
 export default Workplace
