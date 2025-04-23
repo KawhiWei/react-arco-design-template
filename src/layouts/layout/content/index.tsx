@@ -8,7 +8,7 @@ const PublicContent = () => {
   return (
     <Layout>
       <Header style={{ height: "64px", border: '1px solid red' }}></Header>
-      <Content style={{ padding: 24 }}>
+      <Content style={{ padding: 12 }}>
         <Suspense>
           <Outlet />
         </Suspense>

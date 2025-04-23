@@ -4,9 +4,7 @@ const User = () => {
 
     return (
         <div>
-            <Typography style={{ marginTop: -40 }}>
-                <Typography.Title>用户管理</Typography.Title>
-            </Typography>
+            用户管理首页
         </div>
     )
 }

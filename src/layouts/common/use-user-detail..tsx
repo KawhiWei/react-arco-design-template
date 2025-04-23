@@ -14,7 +14,7 @@ const useUserDetail = () => {
         /**
          * 设置主题
          */
-        // document.body.setAttribute('arco-theme', 'dark');
+        document.body.setAttribute('arco-theme', 'dark');
         getMenuList().then(res => {
             setLoading(false);
             function formatMenus(

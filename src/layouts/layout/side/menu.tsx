@@ -2,19 +2,28 @@ import { useEffect, useState } from "react";
 
 import { Menu } from "@arco-design/web-react";
 import { getMenuList } from "../../../api/auth";
-import { Link } from "react-router-dom";
+import { Link, useMatches } from "react-router-dom";
 
 const MenuItem = Menu.Item;
 const SubMenu = Menu.SubMenu;
 const MenuComponent = () => {
+
+    const matches = useMatches();
     const [defaultOpenKeys, setDefaultOpenKeys] = useState(['2']);
+    const [defaultSelectedKeys, setDefaultSelectedKeys] = useState(['2']);
+
     const [menus, setMenus] = useState(Array<any>);
     useEffect(() => {
         getMenuList().then(res => {
             setMenus(res)
             var tress = transferTreeMenuData(res)
             console.log('tress-----------', tress)
-        })
+        });
+        // const [match] = matches || [];
+        // // 获取当前匹配的路由，默认为最后一个
+        // const route = matches[matches.length - 1];
+        // // 从匹配的路由中取出自定义参数
+        // const handle = route?.handle as { parentPaths: [], path: string };
     }, [])
     const transferTreeMenuData = (menus: any[], parentMenu?: any): any[] => {
         const parentId = parentMenu ? parentMenu.id : null;
@@ -38,8 +47,12 @@ const MenuComponent = () => {
         //     children: transferTreeMenuData(menus, item.id)
         // }));
     }
+    const onClickMenuItem = (menus: any) => {
+        console.log('menus', menus)
+    };
 
     const SubMenuComponent = (item: any) => {
+
         return (
             <SubMenu
                 key={item.id}
@@ -51,10 +64,12 @@ const MenuComponent = () => {
                     if (childItem.children.length > 0) {
                         return SubMenuComponent(childItem);
                     }
-
-                    return <MenuItem key={childItem.id}>
-                        <Link to={childItem.path}>{childItem.name}</Link>
-                    </MenuItem>
+                    return (
+                        <Link to={childItem.path}>
+                            <MenuItem key={childItem.id} title={childItem.name}>
+                                {childItem.name}
+                            </MenuItem>
+                        </Link>)
                 })
                 }
             </SubMenu>
@@ -63,17 +78,22 @@ const MenuComponent = () => {
 
     return (
         <Menu
+            style={{ height: '100%' }}
             defaultOpenKeys={defaultOpenKeys}
-            defaultSelectedKeys={['2']}
-            levelIndent={32}>
+            defaultSelectedKeys={defaultSelectedKeys}
+            levelIndent={32}
+            accordion={true}
+            onClickMenuItem={onClickMenuItem}>
             {transferTreeMenuData(menus).map((item: any) => {
                 if (item.children.length > 0) {
                     return SubMenuComponent(item);
                 } else {
                     return (
-                        <MenuItem key={item.id}>
-                            <Link to={item.route || ''}>{item.name}</Link>
-                        </MenuItem>
+                        <Link to={item.route || ''}>
+                            <MenuItem key={item.id}>
+                                {item.name}
+                            </MenuItem>
+                        </Link>
                     );
                 }
 
