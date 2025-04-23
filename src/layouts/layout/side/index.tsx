@@ -2,13 +2,16 @@ import {
     IconMenuFold,
     IconMenuUnfold,
 } from '@arco-design/web-react/icon';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@arco-design/web-react';
 import MenuComponent from './menu';
-import { useState } from 'react';
 
 const SliderMenu = () => {
     const [collapse, setCollapse] = useState(false);
+    useEffect(() => {
+
+    }, [collapse])
     return (
         <div style={{ height: '100%' }}>
             <div style={{ height: '64px', lineHeight: '64px', padding: '0 12px', display: 'flex', alignItems: 'center' }}>
@@ -26,7 +29,7 @@ const SliderMenu = () => {
                 </div>
             </div>
             <div style={{ height: 'calc(100% - 64px)' }}>
-                <MenuComponent />
+                <MenuComponent collapse={collapse} />
             </div>
         </div>
     )
