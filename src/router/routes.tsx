@@ -6,7 +6,7 @@ import PublicLayout from "../layouts/layout";
 
 export const routes: RouteObject[] = [
   {
-    path: '/user/login',
+    path: '/login',
     Component: Login,
   },
   {

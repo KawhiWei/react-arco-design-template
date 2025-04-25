@@ -14,10 +14,9 @@ interface IProp {
 }
 
 const MenuComponent = (props: IProp) => {
-    const matches = useMatches();
+
     const [defaultOpenKeys, setDefaultOpenKeys] = useState(['2']);
     const [defaultSelectedKeys, setDefaultSelectedKeys] = useState(['2']);
-
     const [menus, setMenus] = useState(Array<any>);
     useEffect(() => {
         getMenuList().then(res => {

@@ -14,7 +14,7 @@ const useUserDetail = () => {
         /**
          * 设置主题
          */
-        document.body.setAttribute('arco-theme', 'dark');
+        // document.body.setAttribute('arco-theme', 'dark');
         getMenuList().then(res => {
             setLoading(false);
             function formatMenus(
@@ -85,6 +85,7 @@ const useUserDetail = () => {
                         id: `/*${menu.path}`,
                         // Component: menu.componentPath ? lazy(modules[`../pages/${menu.componentPath}/index.tsx`]) : ErrorPage,
                         Component: menu.componentPath ? lazyLoad[menu.componentPath] ? lazy(lazyLoad[menu.componentPath]) : ErrorPage : ErrorPage,
+                        name: menu.name,
                         handle: {
                             parentPaths: menu.parentPaths,
                             path: menu.route,
