@@ -39,7 +39,7 @@ const PublicLayout = () => {
     console.log('pathname--------', pathname)
     setBreadcrumbList(pathname.split("/"));
     matches.splice
-  }, [collapsed,breadcrumbList])
+  }, [collapsed, breadcrumbList])
 
   const handleCollapsed = () => {
     setCollapsed(!collapsed);

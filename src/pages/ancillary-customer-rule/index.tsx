@@ -4,7 +4,7 @@ const User = () => {
 
     return (
         <div>
-            用户管理首页
+            规则配置首页
         </div>
     )
 }

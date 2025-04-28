@@ -7,6 +7,7 @@ import {
     IconApps,
     IconMenuUnfold,
 } from '@arco-design/web-react/icon';
+import IconComponent from "../../common/icon";
 const MenuItem = Menu.Item;
 const SubMenu = Menu.SubMenu;
 interface IProp {
@@ -63,7 +64,7 @@ const MenuComponent = (props: IProp) => {
                 key={item.id}
                 title=
                 {
-                    <span><IconApps />{item.name}</span>
+                    <span><IconComponent iconName={item.iconName} />{item.name}</span>
                 }>
                 {item.children.map((childItem: any) => {
                     if (childItem.children.length > 0) {
@@ -72,8 +73,7 @@ const MenuComponent = (props: IProp) => {
                     return (
                         <Link to={childItem.path}>
                             <MenuItem key={childItem.id} title={childItem.name}>
-
-                                <span><IconMenuUnfold />{childItem.name}</span>
+                                <span><IconComponent iconName={childItem.iconName} />{childItem.name}</span>
                             </MenuItem>
                         </Link>)
                 })
@@ -98,7 +98,7 @@ const MenuComponent = (props: IProp) => {
                     return (
                         <Link to={item.route || ''}>
                             <MenuItem key={item.id}>
-                                <span><IconMenuUnfold />{item.name}</span>
+                                <span><IconComponent iconName={item.iconName} />{item.name}</span>
                             </MenuItem>
                         </Link>
                     );
