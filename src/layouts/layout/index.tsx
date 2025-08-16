@@ -1,3 +1,4 @@
+import './style.less';
 
 import { Breadcrumb, Button, Layout } from '@arco-design/web-react';
 import {
@@ -8,13 +9,13 @@ import {
 import { useEffect, useState } from 'react';
 import { useLocation, useMatches, useOutlet } from 'react-router-dom';
 
+import AvatarComponent from './avatar';
+import LogoComponent from './logo';
 import PublicContent from './content';
 import PublicHeader from './header';
 import SliderMenu from './side';
-import AvatarComponent from './avatar';
-import LogoComponent from './logo';
 import useUserDetail from '../common/use-user-detail.';
-import './style.less';
+
 const { Content, Sider, Header } = Layout;
 
 // 定义一个名为 PublicLayout 的 React 函数组件
@@ -63,7 +64,12 @@ const PublicLayout = () => {
           </div>
         </Header>
         <Layout className="layout-main-wrap">
-          <Sider collapsed={collapsed}>
+          <Sider collapsed={collapsed}
+          onCollapse={handleCollapsed}
+          collapsible    
+          trigger={collapsed ? <IconCaretRight /> : <IconCaretLeft />}
+          breakpoint='xl'
+          >
             <SliderMenu />
           </Sider>
           <Content className="layout-content" >
