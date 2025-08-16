@@ -1,32 +1,69 @@
-import { Avatar, Button, Dropdown, Layout, Menu } from '@arco-design/web-react';
-const Header = Layout.Header;
+import {
+    Button,
+    Divider,
+    Drawer,
+    Dropdown,
+    Form,
+    Input,
+    Menu,
+    Message,
+    Slider,
+    Space,
+    Switch,
+    Tooltip,
+    Typography
+} from '@arco-design/web-react';
+import React, {
+  useContext,
+  useEffect,
+  useState
+} from 'react';
+import {
+  IconFullscreen,
+  IconFullscreenExit,
+  IconMoonFill,
+  IconNotification,
+  IconRefresh,
+  IconSearch,
+  IconSettings,
+  IconSun
+} from '@arco-design/web-react/icon';
+
 const PublicHeader = () => {
-    const dropList = (
-        <Menu>
-            <Menu.Item key='1'>Beijing</Menu.Item>
-            <Menu.Item key='2'>Shanghai</Menu.Item>
-            <Menu.Item key='3'>Guangzhou</Menu.Item>
-        </Menu>
-    );
+ const [theme, setTheme] = useState('light');
+
+
+  const handleChangeTheme = () => {
+    const themeType = theme === 'light' ? 'dark' : 'light';
+    setTheme(themeType);
+    if (themeType === 'dark') document.body.setAttribute('arco-theme', 'dark');
+    else document.body.removeAttribute('arco-theme');
+  };
 
     return (
-        <Header style={{ height: "64px" }}>
-            <div style={{ height: '64px', lineHeight: '64px', display: 'flex', alignItems: 'center' }}>
-                <div style={{ marginLeft: 'auto' }}>
-                    <Dropdown droplist={dropList} position='bottom'>
-                        <Button type='text'>
-                            <Avatar>
-                                <img alt='avatar'
-                                    src='//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp' />
-                            </Avatar>
-                            <span style={{ paddingLeft: '16px', }}>
-                                Hi，KawhiWei
-                            </span>
-                        </Button>
-                    </Dropdown>
-                </div>
-            </div>
-        </Header>
+        <div className="layout-header-edit" >
+            <Space size="medium">
+        <Input
+          style={{
+            width: 200
+          }}
+          prefix={<IconSearch />}
+          placeholder="请输入内容查询"
+        />
+ <Tooltip
+          position="bottom"
+          trigger="hover"
+          content={`点击切换为${theme === 'light' ? '暗黑' : '亮色'}模式`}
+        >
+          <Button
+            shape="circle"
+            icon={theme === 'light' ? <IconMoonFill /> : <IconSun />}
+            onClick={handleChangeTheme}
+          />
+        </Tooltip>
+                
+            </Space>
+        </div>
 
     )
 }

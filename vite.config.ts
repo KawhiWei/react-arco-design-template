@@ -25,6 +25,15 @@ export default defineConfig({
       '~': resolve(__dirname, './'), // 根路径
     }
   },
+  css: {
+    preprocessorOptions: {
+      less: {
+        additionalData: `@import "${resolve(__dirname, 'src/styles/variable.less')}";`,
+        // 支持内联 JavaScript
+        javascriptEnabled: true
+      }
+    }
+  },
   build: { // 打包设置
     manifest: true,
     rollupOptions: {

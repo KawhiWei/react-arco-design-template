@@ -5,11 +5,14 @@ import { Suspense } from 'react';
 const Content = Layout.Content;
 const PublicContent = () => {
   return (
-    <Content style={{ padding: 12 }}>
+
       <Suspense>
-        <Outlet />
+
+                            <div className="layout-main-content">
+                                <Outlet />
+                            </div>
+
       </Suspense>
-    </Content>
   )
 }
 export default PublicContent

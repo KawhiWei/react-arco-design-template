@@ -1,4 +1,3 @@
-import './index.css';
 
 import { Breadcrumb, Button, Layout } from '@arco-design/web-react';
 import {
@@ -9,14 +8,15 @@ import {
 import { useEffect, useState } from 'react';
 import { useLocation, useMatches, useOutlet } from 'react-router-dom';
 
-import GlobalLoading from '../../components/global-loading';
 import PublicContent from './content';
 import PublicHeader from './header';
 import SliderMenu from './side';
+import AvatarComponent from './avatar';
+import LogoComponent from './logo';
 import useUserDetail from '../common/use-user-detail.';
+import './style.less';
+const { Content, Sider, Header } = Layout;
 
-const BreadcrumbItem = Breadcrumb.Item;
-const Sider = Layout.Sider;
 // 定义一个名为 PublicLayout 的 React 函数组件
 const PublicLayout = () => {
   const matches = useMatches();
@@ -29,7 +29,7 @@ const PublicLayout = () => {
   const { loading } = useUserDetail();
 
   const [collapsed, setCollapsed] = useState(false);
-  const [breadcrumbList, setBreadcrumbList] = useState<Array<string>>([]);
+
   useEffect(() => {
     // 获取当前匹配的路由
     const lastRoute = matches[matches.length - 1];
@@ -37,9 +37,9 @@ const PublicLayout = () => {
     console.log('children--------', children)
     console.log('matches--------', matches)
     console.log('pathname--------', pathname)
-    setBreadcrumbList(pathname.split("/"));
+    //setBreadcrumbList(pathname.split("/"));
     matches.splice
-  }, [collapsed, breadcrumbList])
+  }, [collapsed])
 
   const handleCollapsed = () => {
     setCollapsed(!collapsed);
@@ -53,30 +53,22 @@ const PublicLayout = () => {
 
   // 返回组件的 JSX 结构
   return (
-    <div style={{ height: '100%' }}>
-      <Layout style={{ height: '100%' }}>
-        <Sider collapsed={collapsed} style={{ height: '100%' }}>
-          <div style={{ height: '64px', lineHeight: '64px', padding: '0 2px', display: 'flex', alignItems: 'center' }}>
-            <div style={{ marginLeft: 'auto' }}>
-              <Button shape='round' className='trigger' onClick={() => handleCollapsed()}>
-                {collapsed ? <IconCaretRight /> : <IconCaretLeft />}
-              </Button>
-            </div>
+    <div>
+      <Layout className="layout-container">
+        <Header className="layout-header">
+          <LogoComponent />
+          <div className="layout-header-right">
+            <PublicHeader />
+            <AvatarComponent />
           </div>
-          <div>
+        </Header>
+        <Layout className="layout-main-wrap">
+          <Sider collapsed={collapsed}>
             <SliderMenu />
-          </div>
-        </Sider>
-        <Layout style={{ padding: "0 12px " }}>
-          <PublicHeader />
-          <Breadcrumb separator={<IconRight />}>
-            {
-              breadcrumbList.map((item: any) => {
-                return <BreadcrumbItem>{item}</BreadcrumbItem>
-              })
-            }
-          </Breadcrumb>
-          <PublicContent />
+          </Sider>
+          <Content className="layout-content" >
+            <PublicContent />
+          </Content>
         </Layout>
       </Layout>
 
