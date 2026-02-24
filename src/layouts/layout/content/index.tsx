@@ -1,18 +1,16 @@
-import { Layout } from '@arco-design/web-react';
 import { Outlet } from 'react-router-dom';
 import { Suspense } from 'react';
 
-const Content = Layout.Content;
 const PublicContent = () => {
-  return (
+    return (
 
-      <Suspense>
+        <Suspense>
 
-                            <div className="layout-main-content">
-                                <Outlet />
-                            </div>
+            <div className="layout-main-content">
+                <Outlet />
+            </div>
 
-      </Suspense>
-  )
+        </Suspense>
+    )
 }
 export default PublicContent

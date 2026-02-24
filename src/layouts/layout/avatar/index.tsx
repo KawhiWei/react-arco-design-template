@@ -5,6 +5,7 @@ import {
 } from '@arco-design/web-react';
 import { IconPoweroff, IconUser } from '@arco-design/web-react/icon';
 
+import  { router }  from "../../../router";
 
 const AvatarComponent = () => {
   const iconStyle = {
@@ -14,9 +15,9 @@ const AvatarComponent = () => {
   };
 
   const handleClickMenuItem = (key: string) => {
-    // if (key === 'logout') {
-    //   store.dispatch(accessTokenActions.removeAccessToken());
-    // };
+    if (key === 'logout') {
+      router.navigate('/login');
+    };
   }
   return (
     <Dropdown
