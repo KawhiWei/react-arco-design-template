@@ -1,33 +1,18 @@
 import {
     Button,
-    Divider,
-    Drawer,
-    Dropdown,
-    Form,
     Input,
-    Menu,
-    Message,
-    Slider,
     Space,
-    Switch,
-    Tooltip,
-    Typography
+    Tooltip
 } from '@arco-design/web-react';
-import React, {
-  useContext,
-  useEffect,
-  useState
-} from 'react';
 import {
-  IconFullscreen,
-  IconFullscreenExit,
   IconMoonFill,
-  IconNotification,
-  IconRefresh,
   IconSearch,
-  IconSettings,
   IconSun
 } from '@arco-design/web-react/icon';
+
+import {
+  useState
+} from 'react';
 
 const PublicHeader = () => {
  const [theme, setTheme] = useState('light');
