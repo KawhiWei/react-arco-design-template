@@ -1,7 +1,6 @@
-import { resolve } from 'path'
-
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
 
 // 需要安装@types/node@18.14.2才能识别node模块
 
@@ -14,8 +13,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:5167',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        changeOrigin: true
       },
     },
   },

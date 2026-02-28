@@ -1,5 +1,7 @@
-import logo from '../../../assets/react.svg';
 import './style.less';
+
+import logo from '../../../assets/react.svg';
+
 const LogoComponent = () => {
     return (
         <div className="logo-wrap">

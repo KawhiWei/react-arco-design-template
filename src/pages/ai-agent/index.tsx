@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import './style.less';
 
 import { Avatar, Button, Card, Input, Space, Typography } from '@arco-design/web-react';
-
-import './style.less';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 type ChatMessage = {
   id: string;

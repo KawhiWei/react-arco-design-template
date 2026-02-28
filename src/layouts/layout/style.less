@@ -1,21 +1,92 @@
 .layout-container {
-  .arco-layout {
+  display: flex;
+  overflow: hidden;
+  background-color: @base-content-bg-color;
+  height: 100vh;
+  .layout-sider {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+    height: 100%;
     overflow: hidden;
-    background-color: @base-content-bg-color;
+    .arco-layout-sider-children {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+    .logo-wrap {
+      padding: 0 16px 16px;
+      flex-shrink: 0;
+    }
+  }
+  .layout-sider-menu {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    &::-webkit-scrollbar {
+      width: 2px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: transparent;
+      border-radius: 999px;
+    }
+  }
+  .layout-sider-menu:hover {
+    scrollbar-color: var(--color-neutral-4) transparent;
+  }
+  .layout-sider-menu:hover::-webkit-scrollbar-thumb {
+    background: var(--color-neutral-4);
+  }
+  .layout-sider-menu:hover::-webkit-scrollbar-thumb:hover {
+    background: var(--color-neutral-6);
+  }
+  .layout-sider {
+    position: relative;
+  }
+  .layout-sider .arco-layout-sider-trigger {
+    position: absolute;
+    top: calc(50% - 300px);
+    right: 0;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    line-height: 24px;
+    transform: translateY(-50%);
+    color: var(--color-text-2);
+    background: var(--color-bg-2);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    z-index: 2;
+  }
+  .layout-sider .arco-layout-sider-trigger:hover {
+    background: var(--color-fill-2);
+  }
+  .layout-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
   }
   .layout-header {
-    position: fixed;
-    z-index: 999;
+    position: sticky;
+    top: 0;
+    z-index: 10;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
+    justify-content: flex-end;
     padding: 15px 20px;
     background-color: var(--color-bg-2);
     border-bottom: 1px solid var(--color-border);
     &-right {
       display: flex;
-      flex: 1;
       align-items: center;
       justify-content: flex-end;
       .layout-header-edit {
@@ -42,45 +113,41 @@
     color: var(--color-text-1);
   }
 
-  .layout-main-wrap {
-    position: relative;
-    top: 70px;
-    height: calc(100vh - 70px);
-    overflow: hidden;
-    .layout-content {
-      height: 100%;
-      overflow: auto;
-      background-color: var(--color-bg-1);
-      padding: 10px;
-    }
-    .layout-content-breadcrumb {
-      padding: @layout-main-padding;
-      background-color: var(--color-fill-2);
-    }
-    .layout-main-content {
-      min-height: calc(100vh - 70px - 56px - 56px);
-      color: var(--color-text-1);
-    }
-    .arco-layout-sider-trigger {
-      float: right;
-      width: 30px !important;
-      height: 30px;
-      margin: 0 10px;
-      line-height: 30px;
-      color: var(--color-text-1);
-      background: var(--color-neutral-1);
-    }
-    .breadcrumb-icon {
-      display: flex;
-      align-items: center;
-      font-size: 18px;
-      color: var(--color-text-1);
-      vertical-align: text-bottom;
-      .icon-separator {
-        width: 1rem;
-        margin-left: 10px;
-        color: var(--color-text-4);
-      }
+  .layout-content {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    overflow-x: hidden;
+    background-color: var(--color-bg-1);
+    padding: 10px;
+  }
+  .layout-content-breadcrumb {
+    padding: @layout-main-padding;
+    background-color: var(--color-fill-2);
+  }
+  .layout-main-content {
+    min-height: 0;
+    color: var(--color-text-1);
+  }
+  .arco-layout-sider-trigger {
+    float: right;
+    width: 30px !important;
+    height: 30px;
+    margin: 0 10px;
+    line-height: 30px;
+    color: var(--color-text-1);
+    background: var(--color-neutral-1);
+  }
+  .breadcrumb-icon {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: var(--color-text-1);
+    vertical-align: text-bottom;
+    .icon-separator {
+      width: 1rem;
+      margin-left: 10px;
+      color: var(--color-text-4);
     }
   }
   .layout-footer {

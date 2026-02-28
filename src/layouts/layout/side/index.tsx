@@ -2,7 +2,7 @@ import MenuComponent from './menu';
 
 const SliderMenu = () => {
     return (
-        <div style={{ height: '100%' }}>
+        <div className="layout-sider-menu">
             <MenuComponent collapse={false} />
         </div>
     )

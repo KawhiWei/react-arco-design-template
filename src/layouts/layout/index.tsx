@@ -1,6 +1,5 @@
 import './style.less';
 
-import { Layout } from '@arco-design/web-react';
 import {
   IconCaretLeft,
   IconCaretRight,
@@ -9,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useMatches, useOutlet } from 'react-router-dom';
 
 import AvatarComponent from './avatar';
+import { Layout } from '@arco-design/web-react';
 import LogoComponent from './logo';
 import PublicContent from './content';
 import PublicHeader from './header';
@@ -53,30 +53,30 @@ const PublicLayout = () => {
 
   // 返回组件的 JSX 结构
   return (
-    <div>
-      <Layout className="layout-container">
+
+    <Layout className="layout-container">
+      <Sider
+        className="layout-sider"
+        collapsed={collapsed}
+        onCollapse={handleCollapsed}
+        collapsible
+        trigger={collapsed ? <IconCaretRight /> : <IconCaretLeft />}
+        breakpoint='xl'
+      >
+        <LogoComponent />
+        <SliderMenu />
+      </Sider>
+      <Layout className="layout-main">
         <Header className="layout-header">
-          <LogoComponent />
           <div className="layout-header-right">
             <PublicHeader />
             <AvatarComponent />
           </div>
         </Header>
-        <Layout className="layout-main-wrap">
-          <Sider collapsed={collapsed}
-          onCollapse={handleCollapsed}
-          collapsible    
-          trigger={collapsed ? <IconCaretRight /> : <IconCaretLeft />}
-          breakpoint='xl'
-          >
-            <SliderMenu />
-          </Sider>
-          <Content className="layout-content" >
-            <PublicContent />
-          </Content>
-        </Layout>
+        <Content className="layout-content">
+          <PublicContent />
+        </Content>
       </Layout>
-
-    </div>)
+    </Layout>)
 }
 export default PublicLayout

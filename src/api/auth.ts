@@ -45,7 +45,238 @@ export const getMenuList = () => {
                     parentId: '2',
                     parentPaths: Array<string>,
                     children: []
-                }
+                },
+                // {
+                //     id: '3',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '4',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '5',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '6',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '7',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '8',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '9',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '10',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '11',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '12',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '13',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '14',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '15',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '16',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '17',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '18',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '19',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '20',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '21',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '22',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // },
+                // {
+                //     id: '23',
+                //     route: '/ancillary',
+                //     componentPath: null,
+                //     name: '验证配置',
+                //     show: true,
+                //     iconName: "ruleConfig",
+                //     parentId: null,
+                //     parentPaths: Array<string>,
+                //     children: []
+                // }
             ])
         })
     })
