@@ -3,3 +3,23 @@ html, body, #root {
     width: 100%;
     margin: 0;
   }
+
+:root {
+  --color-text: #000;
+  --color-text-1: #000;
+  --color-text-2: #000;
+  --color-text-3: #000;
+  --color-text-4: #000;
+  --color-text-5: #000;
+  --color-text-title: #000;
+}
+
+body[arco-theme='dark'] {
+  --color-text: #fff;
+  --color-text-1: #fff;
+  --color-text-2: #fff;
+  --color-text-3: #fff;
+  --color-text-4: #fff;
+  --color-text-5: #fff;
+  --color-text-title: #fff;
+}
