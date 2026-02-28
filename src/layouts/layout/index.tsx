@@ -58,6 +58,7 @@ const PublicLayout = () => {
       <Sider
         className="layout-sider"
         collapsed={collapsed}
+        width={260}
         onCollapse={handleCollapsed}
         collapsible
         trigger={collapsed ? <IconCaretRight /> : <IconCaretLeft />}
