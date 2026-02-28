@@ -30,13 +30,26 @@
     font-size: 18px;
     vertical-align: text-bottom;
   }
+  .arco-menu {
+    color: var(--color-text-1);
+  }
+  .arco-menu-item,
+  .arco-menu-inline-header {
+    color: var(--color-text-1);
+  }
+  .arco-menu-item .arco-icon,
+  .arco-menu-inline-header .arco-icon {
+    color: var(--color-text-1);
+  }
 
   .layout-main-wrap {
     position: relative;
     top: 70px;
-    overflow-y: auto;
+    height: calc(100vh - 70px);
+    overflow: hidden;
     .layout-content {
-      height: calc(100vh - 71px);
+      height: 100%;
+      overflow: auto;
       background-color: var(--color-bg-1);
       padding: 10px;
     }

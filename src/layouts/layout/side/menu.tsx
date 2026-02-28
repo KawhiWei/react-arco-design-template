@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 
 import { Menu } from "@arco-design/web-react";
 import { getMenuList } from "../../../api/auth";
-import { Link, useMatches } from "react-router-dom";
-import {
-    IconApps,
-    IconMenuUnfold,
-} from '@arco-design/web-react/icon';
+import { Link } from "react-router-dom";
 import IconComponent from "../../common/icon";
 const MenuItem = Menu.Item;
 const SubMenu = Menu.SubMenu;
@@ -16,8 +12,8 @@ interface IProp {
 
 const MenuComponent = (props: IProp) => {
 
-    const [defaultOpenKeys, setDefaultOpenKeys] = useState(['2']);
-    const [defaultSelectedKeys, setDefaultSelectedKeys] = useState(['2']);
+    const [defaultOpenKeys] = useState(['2']);
+    const [defaultSelectedKeys] = useState(['2']);
     const [menus, setMenus] = useState(Array<any>);
     useEffect(() => {
         getMenuList().then(res => {

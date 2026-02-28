@@ -12,6 +12,7 @@
   "dependencies": {
     "@arco-design/web-react": "^2.66.1",
     "@types/node": "^22.14.1",
+    "axios": "^1.7.9",
     "less": "^4.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

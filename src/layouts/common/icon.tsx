@@ -1,6 +1,4 @@
-import { IconDashboard, IconSettings } from "@arco-design/web-react/icon";
-
-import { Icon } from "@arco-design/web-react";
+import { IconApps, IconDashboard, IconSettings } from "@arco-design/web-react/icon";
 
 interface IProp {
     iconName: string;
@@ -10,7 +8,8 @@ interface IProp {
 
 const iconMap: any = {
     "ruleConfig": <IconSettings />,
-    "dashboard": <IconDashboard />
+    "dashboard": <IconDashboard />,
+    "aiAgent": <IconApps />
 };
 
 const IconRenderer = (iconName: string) => {

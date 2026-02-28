@@ -1,10 +1,9 @@
 import './style.less';
 
-import { Breadcrumb, Button, Layout } from '@arco-design/web-react';
+import { Layout } from '@arco-design/web-react';
 import {
   IconCaretLeft,
   IconCaretRight,
-  IconRight,
 } from '@arco-design/web-react/icon';
 import { useEffect, useState } from 'react';
 import { useLocation, useMatches, useOutlet } from 'react-router-dom';
@@ -27,7 +26,7 @@ const PublicLayout = () => {
   const { pathname } = useLocation();
 
   // 使用 useUserDetail 钩子获取用户详情的状态，其中包含 loading 属性
-  const { loading } = useUserDetail();
+  useUserDetail();
 
   const [collapsed, setCollapsed] = useState(false);
 

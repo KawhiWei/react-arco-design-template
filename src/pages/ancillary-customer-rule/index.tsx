@@ -1,5 +1,3 @@
-import { Typography, } from "@arco-design/web-react"
-
 const User = () => {
 
     return (

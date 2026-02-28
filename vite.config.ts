@@ -1,4 +1,4 @@
-import path, { resolve } from 'path'
+import { resolve } from 'path'
 
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -10,6 +10,15 @@ export default defineConfig({
   plugins: [
     react()
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5167',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
   // 配置css加载器  需要下载less@4.1.3  less-loader@11.1.0
   css: {
     preprocessorOptions: {

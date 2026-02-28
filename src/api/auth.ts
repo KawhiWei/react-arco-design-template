@@ -14,6 +14,17 @@ export const getMenuList = () => {
                     children: [],
                 },
                 {
+                    id: '1-1',
+                    route: '/ai-agent',
+                    componentPath: '/ai-agent/index.tsx',
+                    name: 'AIAgent',
+                    show: true,
+                    iconName: "aiAgent",
+                    parentId: '1',
+                    parentPaths: Array<string>,
+                    children: [],
+                },
+                {
                     id: '2',
                     route: '/ancillary',
                     componentPath: null,
