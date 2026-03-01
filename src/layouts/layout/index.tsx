@@ -33,13 +33,17 @@ const PublicLayout = () => {
   useEffect(() => {
     // 获取当前匹配的路由
     const lastRoute = matches[matches.length - 1];
+    const handle = lastRoute?.handle as { name?: string } | undefined;
+    if (handle?.name) {
+      document.title = handle.name;
+    }
     console.log('lastRoute--------', lastRoute)
     console.log('children--------', children)
     console.log('matches--------', matches)
     console.log('pathname--------', pathname)
     //setBreadcrumbList(pathname.split("/"));
     matches.splice
-  }, [collapsed])
+  }, [children, matches, pathname, collapsed])
 
   const handleCollapsed = () => {
     setCollapsed(!collapsed);
@@ -64,8 +68,8 @@ const PublicLayout = () => {
         trigger={collapsed ? <IconCaretRight /> : <IconCaretLeft />}
         breakpoint='xl'
       >
-        <LogoComponent />
-        <SliderMenu />
+        <LogoComponent collapse={collapsed} />
+        <SliderMenu collapse={collapsed} />
       </Sider>
       <Layout className="layout-main">
         <Header className="layout-header">

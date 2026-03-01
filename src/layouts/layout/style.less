@@ -119,11 +119,18 @@
     overflow: auto;
     overflow-x: hidden;
     background-color: var(--color-bg-1);
-    padding: 10px;
+    padding: 20px 24px 0;
+  }
+  .layout-content-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--color-bg-1);
+    padding-bottom: 16px;
   }
   .layout-content-breadcrumb {
-    padding: @layout-main-padding;
-    background-color: var(--color-fill-2);
+    margin-bottom: 8px;
+    color: var(--color-text-3);
   }
   .layout-main-content {
     min-height: 0;

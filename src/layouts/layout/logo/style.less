@@ -1,9 +1,18 @@
 .logo-wrap {
   display: flex;
   max-width: 240px;
+  height: 40px;
+  align-items: center;
   .logo-title {
     margin: 0 15px;
     font-size: 18px;
     color: var(--color-text-1);
+  }
+}
+
+.logo-wrap.is-collapsed {
+  img,
+  .logo-title {
+    visibility: hidden;
   }
 }

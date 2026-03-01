@@ -1,9 +1,13 @@
 import MenuComponent from './menu';
 
-const SliderMenu = () => {
+interface SliderMenuProps {
+    collapse: boolean;
+}
+
+const SliderMenu = ({ collapse }: SliderMenuProps) => {
     return (
         <div className="layout-sider-menu">
-            <MenuComponent collapse={false} />
+            <MenuComponent collapse={collapse} />
         </div>
     )
 }
