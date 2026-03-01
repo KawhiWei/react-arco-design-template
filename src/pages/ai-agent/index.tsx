@@ -27,15 +27,16 @@ const getTitle = (text: string, maxLength = 24) =>
 const AIAgent = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const initialSessionIdRef = useRef(createId());
   const [sessions, setSessions] = useState<ChatSession[]>(() => [
     {
-      id: createId(),
+      id: initialSessionIdRef.current,
       title: '新会话',
       messages: [],
       updatedAt: Date.now(),
     },
   ]);
-  const [activeSessionId, setActiveSessionId] = useState(sessions[0].id);
+  const [activeSessionId, setActiveSessionId] = useState(initialSessionIdRef.current);
   const controllerRef = useRef<AbortController | null>(null);
   const typingTimerRef = useRef<number | null>(null);
   const typingQueueRef = useRef<string[]>([]);
@@ -56,6 +57,12 @@ const AIAgent = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (sessions.length > 0 && !sessions.some((session) => session.id === activeSessionId)) {
+      setActiveSessionId(sessions[0].id);
+    }
+  }, [activeSessionId, sessions]);
 
   useEffect(() => {
     return () => {
