@@ -1,8 +1,9 @@
 import './style.less';
 
-import { Avatar, Button, Card, Input, Space, Typography } from '@arco-design/web-react';
-import { IconPlus } from '@arco-design/web-react/icon';
+import { Avatar, Button, Card, Input, Layout, List, Space, Typography } from '@arco-design/web-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+
+import { IconPlus } from '@arco-design/web-react/icon';
 
 type ChatMessage = {
   id: string;
@@ -50,7 +51,6 @@ const AIAgent = () => {
   );
 
   const messages = activeSession?.messages || [];
-  const activeSessionTitle = activeSession?.title || '新会话';
 
   const canSend = useMemo(() => input.trim().length > 0 && !loading, [input, loading]);
 
@@ -99,13 +99,13 @@ const AIAgent = () => {
           prev.map((session) =>
             session.id === activeAssistantSessionIdRef.current
               ? {
-                  ...session,
-                  messages: session.messages.map((item) =>
-                    item.id === activeAssistantIdRef.current
-                      ? { ...item, content: item.content + nextChar }
-                      : item
-                  ),
-                }
+                ...session,
+                messages: session.messages.map((item) =>
+                  item.id === activeAssistantIdRef.current
+                    ? { ...item, content: item.content + nextChar }
+                    : item
+                ),
+              }
               : session
           )
         );
@@ -171,15 +171,15 @@ const AIAgent = () => {
       prev.map((session) =>
         session.id === sessionId
           ? {
-              ...session,
-              title: session.title === '新会话' ? getTitle(prompt) : session.title,
-              updatedAt: Date.now(),
-              messages: [
-                ...session.messages,
-                { id: userId, role: 'user', content: prompt },
-                { id: assistantId, role: 'assistant', content: '' },
-              ],
-            }
+            ...session,
+            title: session.title === '新会话' ? getTitle(prompt) : session.title,
+            updatedAt: Date.now(),
+            messages: [
+              ...session.messages,
+              { id: userId, role: 'user', content: prompt },
+              { id: assistantId, role: 'assistant', content: '' },
+            ],
+          }
           : session
       )
     );
@@ -191,13 +191,13 @@ const AIAgent = () => {
         prev.map((session) =>
           session.id === sessionId
             ? {
-                ...session,
-                messages: session.messages.map((item) =>
-                  item.id === assistantId
-                    ? { ...item, content: '连接失败，请稍后重试。' }
-                    : item
-                ),
-              }
+              ...session,
+              messages: session.messages.map((item) =>
+                item.id === assistantId
+                  ? { ...item, content: '连接失败，请稍后重试。' }
+                  : item
+              ),
+            }
             : session
         )
       );
@@ -234,44 +234,46 @@ const AIAgent = () => {
   };
 
   return (
-    <div className="ai-agent-page">
-      <div className="ai-agent-sessions">
-        <div className="ai-agent-sessions-header">
+    <Layout className="ai-agent-page">
+      <Layout.Sider className="ai-agent-sessions">
+        <Space className="ai-agent-sessions-header" align="center">
           <Title heading={6}>历史会话</Title>
           <Button type="text" size="mini" icon={<IconPlus />} onClick={handleCreateSession}>
             新建
           </Button>
-        </div>
-        <div className="ai-agent-session-list">
-          {sessions.map((session) => (
-            <div
-              key={session.id}
-              className={`ai-agent-session-item${
-                session.id === activeSessionId ? ' is-active' : ''
-              }`}
-              onClick={() => handleSelectSession(session.id)}
-              role="button"
-            >
-              <div className="ai-agent-session-title">{session.title}</div>
-              <Text type="secondary" className="ai-agent-session-meta">
-                {new Date(session.updatedAt).toLocaleString()}
-              </Text>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="ai-agent-panel">
-        <div className="ai-agent-session-title">
-          <Title heading={4}>{activeSessionTitle}</Title>
-          <Text type="secondary">SSE 实时输出，打字机效果呈现</Text>
-        </div>
-        <div className="ai-agent-messages">
+        </Space>
+        <Space direction="vertical" size={8} className="ai-agent-session-space">
+          <Space className="ai-agent-session-spacer" />
+          <List
+            className="ai-agent-session-list"
+            dataSource={sessions}
+            render={(session) => (
+              <List.Item
+                key={session.id}
+                className={`ai-agent-session-item${session.id === activeSessionId ? ' is-active' : ''
+                  }`}
+                onClick={() => handleSelectSession(session.id)}
+              >
+                <Space direction="vertical" size={4} style={{ width: '100%' }}>
+                  <Text className="ai-agent-session-title">{session.title}</Text>
+                  <Text type="secondary" className="ai-agent-session-meta">
+                    {new Date(session.updatedAt).toLocaleString()}
+                  </Text>
+                </Space>
+              </List.Item>
+            )}
+          />
+          <Space className="ai-agent-session-spacer" />
+        </Space>
+      </Layout.Sider>
+      <Layout.Content className="ai-agent-panel">
+        <Card className="ai-agent-messages" bordered={false}>
           <Space direction="vertical" size={16} style={{ width: '100%' }}>
             {messages.length === 0 ? (
-              <div className="ai-agent-empty">暂无对话，开始一个新问题吧。</div>
+              <Text className="ai-agent-empty">暂无对话，开始一个新问题吧。</Text>
             ) : (
               messages.map((item) => (
-                <div key={item.id} className={`ai-agent-message ${item.role}`}>
+                <Space key={item.id} className={`ai-agent-message ${item.role}`} align="start">
                   <Avatar size={28} className="ai-agent-avatar">
                     {item.role === 'user' ? 'U' : 'AI'}
                   </Avatar>
@@ -280,12 +282,12 @@ const AIAgent = () => {
                       {item.content || (item.role === 'assistant' ? '...' : '')}
                     </Paragraph>
                   </Card>
-                </div>
+                </Space>
               ))
             )}
-            <div ref={messagesEndRef} />
+            <span ref={messagesEndRef} />
           </Space>
-        </div>
+        </Card>
 
         <Card className="ai-agent-input" bordered={false}>
           <Space direction="vertical" size={12} style={{ width: '100%' }}>
@@ -300,18 +302,18 @@ const AIAgent = () => {
                 }
               }}
             />
-            <div className="ai-agent-actions">
+            <Space className="ai-agent-actions" size={12} align="center">
               <Button type="primary" onClick={handleSend} loading={loading} disabled={!input.trim()}>
                 发送
               </Button>
               <Button onClick={handleStop} disabled={!loading}>
                 停止
               </Button>
-            </div>
+            </Space>
           </Space>
         </Card>
-      </div>
-    </div>
+      </Layout.Content>
+    </Layout>
   );
 };
 
