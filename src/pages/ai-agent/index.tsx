@@ -131,7 +131,7 @@ const AIAgent = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message: prompt }),
+      body: JSON.stringify({ message: prompt, userId: '1209332', sessionId: "fb1f7f1471d7006049bf622407f39057" }),
       signal: controller.signal,
     });
 
