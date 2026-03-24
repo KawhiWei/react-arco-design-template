@@ -1,4 +1,6 @@
-import { Breadcrumb } from '@arco-design/web-react';
+import { Breadcrumb } from 'tdesign-react';
+
+const { BreadcrumbItem } = Breadcrumb;
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { Outlet, useLocation, useMatches } from 'react-router-dom';
 
@@ -64,7 +66,7 @@ const PublicContent = () => {
                 <div className="layout-content-header">
                     <Breadcrumb className="layout-content-breadcrumb">
                         {breadcrumbItems.map(item => (
-                            <Breadcrumb.Item key={item.key}>{item.label}</Breadcrumb.Item>
+                            <BreadcrumbItem key={item.key}>{item.label}</BreadcrumbItem>
                         ))}
                     </Breadcrumb>
                 </div>

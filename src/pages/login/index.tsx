@@ -1,20 +1,16 @@
-import { Button, Typography, } from "@arco-design/web-react"
-
+import { Button } from "tdesign-react"
 import { router } from "../../router"
 
 const Login = () => {
-debugger
   const handleSubmit = async () => {
-
     router.navigate('/');
   };
 
   return (
     <div>
-      <Typography style={{ marginTop: -40 }}>
-        <Typography.Title>Logi收到佛i卢卡库神魔大陆阿萨德阿是</Typography.Title>
-      </Typography>
-      <Button type='primary' onClick={handleSubmit}>Primary</Button>
+      <h1>Login</h1>
+      <p>Logi收到佛i卢卡库神魔大陆阿萨德阿是</p>
+      <Button theme='primary' onClick={handleSubmit}>Primary</Button>
     </div>
   )
 }

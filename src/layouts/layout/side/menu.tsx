@@ -1,35 +1,58 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import { Menu } from "@arco-design/web-react";
+import { Menu, MenuValue } from "tdesign-react";
 import { getMenuList } from "../../../api/auth";
-import { Link } from "react-router-dom";
 import IconComponent from "../../common/icon";
-const MenuItem = Menu.Item;
-const SubMenu = Menu.SubMenu;
+
+const { MenuItem, SubMenu } = Menu;
+
 interface IProp {
     collapse: boolean;
+    theme: 'light' | 'dark';
+}
+
+interface MenuItemData {
+    id: string;
+    route: string;
+    name: string;
+    iconName: string | null;
+    parentId: string | null;
+    path: string;
+    parentPaths: string[];
+    children: MenuItemData[];
+}
+
+interface RawMenuItem {
+    id: string;
+    route: string;
+    name: string;
+    iconName: string | null;
+    parentId: string | null;
+}
+
+interface ParentMenuNode {
+    id: string;
+    parentPaths: string[];
 }
 
 const MenuComponent = (props: IProp) => {
+    const { pathname } = useLocation();
+    const navigate = useNavigate();
 
-    const [defaultOpenKeys] = useState(['2']);
-    const [defaultSelectedKeys] = useState(['2']);
-    const [menus, setMenus] = useState(Array<any>);
+    const [menus, setMenus] = useState<RawMenuItem[]>([]);
+    const [userExpanded, setUserExpanded] = useState<string[]>([]);
+    const [initialized, setInitialized] = useState(false);
+
     useEffect(() => {
         getMenuList().then(res => {
-            setMenus(res)
-            var tress = transferTreeMenuData(res)
-            console.log('tress-----------', tress)
+            setMenus(res);
         });
-        // const [match] = matches || [];
-        // // 获取当前匹配的路由，默认为最后一个
-        // const route = matches[matches.length - 1];
-        // // 从匹配的路由中取出自定义参数
-        // const handle = route?.handle as { parentPaths: [], path: string };
-    }, [])
-    const transferTreeMenuData = (menus: any[], parentMenu?: any): any[] => {
+    }, []);
+
+    const transferTreeMenuData = useCallback((menuList: RawMenuItem[], parentMenu?: ParentMenuNode): MenuItemData[] => {
         const parentId = parentMenu ? parentMenu.id : null;
-        return menus.filter(item => item.parentId === parentId).map(item => {
+        return menuList.filter(item => item.parentId === parentId).map(item => {
             const parentPaths = parentMenu?.parentPaths || [];
             const lastPath = parentPaths.length > 0 ? parentPaths[parentPaths.length - 1] : '';
             const path = (parentMenu ? `${lastPath}${item.route}` : item.route) || '';
@@ -37,75 +60,121 @@ const MenuComponent = (props: IProp) => {
                 ...item,
                 path,
                 parentPaths,
-                children: transferTreeMenuData(menus, {
-                    ...item, parentPaths: [...parentPaths, path || ''].filter(o => o),
+                children: transferTreeMenuData(menuList, {
+                    id: item.id,
+                    parentPaths: [...parentPaths, path].filter(Boolean),
                 })
-
-            }
+            };
         });
+    }, []);
 
-        // return menus.filter(item => item.parentId === parentId).map(item => ({
-        //     ...item,
-        //     children: transferTreeMenuData(menus, item.id)
-        // }));
-    }
-    const onClickMenuItem = (menus: any) => {
-        console.log('menus', menus)
+    const treeMenus = useMemo(() => transferTreeMenuData(menus), [menus, transferTreeMenuData]);
+
+    useEffect(() => {
+        if (treeMenus.length > 0 && !initialized) {
+            const keys: string[] = [];
+            const findParent = (items: MenuItemData[]) => {
+                for (const item of items) {
+                    if (item.children.length > 0) {
+                        const hasActiveChild = item.children.some(
+                            child => child.path === pathname || pathname.startsWith(child.path + '/')
+                        );
+                        if (hasActiveChild) {
+                            keys.push(item.path);
+                        }
+                        findParent(item.children);
+                    }
+                }
+            };
+            findParent(treeMenus);
+            setUserExpanded(keys);
+            setInitialized(true);
+        }
+    }, [treeMenus, pathname, initialized]);
+
+    const onExpand = (keys: MenuValue[]) => {
+        setUserExpanded(keys.map(String));
     };
 
-    const SubMenuComponent = (item: any) => {
+    const onMenuChange = (value: MenuValue) => {
+        const nextPath = String(value);
+        const queue: MenuItemData[] = [...treeMenus];
+        while (queue.length > 0) {
+            const node = queue.shift();
+            if (!node) {
+                break;
+            }
+            if (node.path === nextPath) {
+                if (node.children.length === 0) {
+                    navigate(nextPath);
+                }
+                return;
+            }
+            if (node.children.length > 0) {
+                queue.push(...node.children);
+            }
+        }
 
+        navigate(nextPath);
+    };
+
+    const getMenuIcon = (iconName: string | null) => {
+        if (!iconName) {
+            return undefined;
+        }
+        return <IconComponent iconName={iconName} />;
+    };
+
+    const submenuPopupProps = props.collapse
+        ? {
+            trigger: 'hover' as const,
+            attach: () => document.body,
+        }
+        : undefined;
+
+    const renderSubMenu = (item: MenuItemData) => {
         return (
             <SubMenu
-                key={item.id}
-                title=
-                {
-                    <span><IconComponent iconName={item.iconName} />{item.name}</span>
-                }>
-                {item.children.map((childItem: any) => {
+                key={item.path}
+                value={item.path}
+                icon={getMenuIcon(item.iconName)}
+                popupProps={submenuPopupProps}
+                title={item.name}>
+                {item.children.map((childItem) => {
                     if (childItem.children.length > 0) {
-                        return SubMenuComponent(childItem);
+                        return renderSubMenu(childItem);
                     }
                     return (
-                        <Link to={childItem.path}>
-                            <MenuItem key={childItem.id} title={childItem.name}>
-                                <span><IconComponent iconName={childItem.iconName} />{childItem.name}</span>
-                            </MenuItem>
-                        </Link>)
-                })
-                }
+                        <MenuItem key={childItem.path} value={childItem.path} icon={getMenuIcon(childItem.iconName)}>
+                            {childItem.name}
+                        </MenuItem>
+                    );
+                })}
             </SubMenu>
-        )
-    }
+        );
+    };
 
     return (
         <Menu
-            style={{ height: '100%' }}
-            defaultOpenKeys={defaultOpenKeys}
-            defaultSelectedKeys={defaultSelectedKeys}
-            levelIndent={32}
-            accordion={true}
-            collapse={props.collapse}
-            onClickMenuItem={onClickMenuItem}>
-            {transferTreeMenuData(menus).map((item: any) => {
+            value={pathname}
+            expanded={userExpanded}
+            collapsed={props.collapse}
+            theme={props.theme}
+            expandMutex={true}
+            onExpand={onExpand}
+            onChange={onMenuChange}>
+            {treeMenus.map((item) => {
                 if (item.children.length > 0) {
-                    return SubMenuComponent(item);
-                } else {
-                    return (
-                        <Link to={item.route || ''}>
-                            <MenuItem key={item.id}>
-                                <span><IconComponent iconName={item.iconName} />{item.name}</span>
-                            </MenuItem>
-                        </Link>
-                    );
+                    return renderSubMenu(item);
                 }
-
+                return (
+                    <MenuItem key={item.path} value={item.path} icon={getMenuIcon(item.iconName)}>
+                        {item.name}
+                    </MenuItem>
+                );
             })}
-
         </Menu>
     );
+};
 
-}
-
-
-export default MenuComponent
+export default MenuComponent;

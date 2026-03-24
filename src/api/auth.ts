@@ -20,7 +20,7 @@ export const getMenuList = () => {
                     name: 'AIAgent',
                     show: true,
                     iconName: "aiAgent",
-                    parentId: '1',
+                    parentId: '2',
                     parentPaths: Array<string>,
                     children: [],
                 },

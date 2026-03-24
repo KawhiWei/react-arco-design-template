@@ -1,30 +1,12 @@
-import {
-    Button,
-    Input,
-    Space,
-    Tooltip
-} from '@arco-design/web-react';
-import {
-  IconMoonFill,
-  IconSearch,
-  IconSun
-} from '@arco-design/web-react/icon';
+import { Button, Input, Space, Tooltip } from 'tdesign-react';
+import { MoonIcon, SearchIcon, SunnyIcon } from 'tdesign-icons-react';
 
-import {
-  useState
-} from 'react';
+interface PublicHeaderProps {
+  theme: 'light' | 'dark';
+  onChangeTheme: () => void;
+}
 
-const PublicHeader = () => {
- const [theme, setTheme] = useState('light');
-
-
-  const handleChangeTheme = () => {
-    const themeType = theme === 'light' ? 'dark' : 'light';
-    setTheme(themeType);
-    if (themeType === 'dark') document.body.setAttribute('arco-theme', 'dark');
-    else document.body.removeAttribute('arco-theme');
-  };
-
+const PublicHeader = ({ theme, onChangeTheme }: PublicHeaderProps) => {
     return (
         <div className="layout-header-edit" >
             <Space size="medium">
@@ -32,18 +14,18 @@ const PublicHeader = () => {
           style={{
             width: 200
           }}
-          prefix={<IconSearch />}
+          prefixIcon={<SearchIcon />}
           placeholder="请输入内容查询"
         />
  <Tooltip
-          position="bottom"
+          placement="bottom"
           trigger="hover"
           content={`点击切换为${theme === 'light' ? '暗黑' : '亮色'}模式`}
         >
           <Button
             shape="circle"
-            icon={theme === 'light' ? <IconMoonFill /> : <IconSun />}
-            onClick={handleChangeTheme}
+            icon={theme === 'light' ? <MoonIcon /> : <SunnyIcon />}
+            onClick={onChangeTheme}
           />
         </Tooltip>
                 

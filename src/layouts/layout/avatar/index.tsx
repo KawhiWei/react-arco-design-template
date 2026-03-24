@@ -1,47 +1,58 @@
-import {
-  Avatar,
-  Dropdown,
-  Menu
-} from '@arco-design/web-react';
-import { IconPoweroff, IconUser } from '@arco-design/web-react/icon';
+import { Avatar, Dropdown, Button } from 'tdesign-react';
+import type { DropdownOption } from 'tdesign-react';
+import { PoweroffIcon, UserIcon } from 'tdesign-icons-react';
 
-import  { router }  from "../../../router";
+import { router } from "../../../router";
 
 const AvatarComponent = () => {
-  const iconStyle = {
+  const iconStyle: React.CSSProperties = {
     marginRight: 8,
     fontSize: 16,
     transform: 'translateY(1px)'
   };
 
-  const handleClickMenuItem = (key: string) => {
-    if (key === 'logout') {
+  const options = [
+    {
+      content: (
+        <span>
+          <UserIcon style={iconStyle} />
+          个人信息
+        </span>
+      ),
+      value: 'admin',
+    },
+    {
+      content: (
+        <span>
+          <PoweroffIcon style={iconStyle} />
+          退出登录
+        </span>
+      ),
+      value: 'logout',
+    },
+  ];
+
+  const handleClickMenuItem = (dropdownItem: DropdownOption) => {
+    if (dropdownItem.value === 'logout') {
       router.navigate('/login');
-    };
-  }
+    }
+  };
+
   return (
     <Dropdown
-      position="br"
-      droplist={
-        <Menu onClickMenuItem={handleClickMenuItem}>
-          <Menu.Item key="admin">
-            <IconUser style={iconStyle} />
-            个人信息
-          </Menu.Item>
-          <Menu.Item key="logout">
-            <IconPoweroff style={iconStyle} />
-            退出登录
-          </Menu.Item>
-        </Menu>
-      }
+      placement="bottom-right"
+      options={options}
+      onClick={handleClickMenuItem}
     >
-      <Avatar
-        style={{
-          backgroundColor: '#165DFF'
-        }}
-      >
-        H
-      </Avatar>
+      <Button variant="text" style={{ padding: 0 }}>
+        <Avatar
+          style={{
+            backgroundColor: '#165DFF'
+          }}
+        >
+          H
+        </Avatar>
+      </Button>
     </Dropdown>
   );
 }

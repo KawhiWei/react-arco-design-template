@@ -1,4 +1,4 @@
-import '@arco-design/web-react/dist/css/arco.css';
+import 'tdesign-react/es/style/index.css';
 import './main.css'
 
 import App from './App.tsx'

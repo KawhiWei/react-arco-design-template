@@ -1,319 +1,197 @@
 import './style.less';
+import '@tdesign-react/chat/es/style/index.js';
 
-import { Avatar, Button, Card, Input, Layout, List, Space, Typography } from '@arco-design/web-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { ChatBot } from '@tdesign-react/chat';
+import type { ChatMessagesData } from 'tdesign-web-components/lib/chat-engine/type';
+import { Button, Empty, Menu, Space } from 'tdesign-react';
+import { AddIcon } from 'tdesign-icons-react';
+import { useMemo, useRef, useState } from 'react';
 
-import { IconPlus } from '@arco-design/web-react/icon';
-
-type ChatMessage = {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-};
+type ChatBotProps = React.ComponentProps<typeof ChatBot>;
+type MessageChangeEvent = Parameters<NonNullable<ChatBotProps['onMessageChange']>>[0];
 
 type ChatSession = {
   id: string;
   title: string;
-  messages: ChatMessage[];
   updatedAt: number;
+  messages: ChatMessagesData[];
 };
 
-const { TextArea } = Input;
-const { Title, Paragraph, Text } = Typography;
-
 const createId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-const getTitle = (text: string, maxLength = 24) =>
-  text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+
+const readMessageText = (message: ChatMessagesData) => {
+  if (!Array.isArray(message.content)) {
+    return '';
+  }
+
+  for (const item of message.content) {
+    if ((item.type === 'text' || item.type === 'markdown') && typeof item.data === 'string') {
+      const normalized = item.data.trim();
+      if (normalized.length > 0) {
+        return normalized;
+      }
+    }
+  }
+
+  return '';
+};
+
+const readSessionTitle = (messages: ChatMessagesData[]) => {
+  for (const message of messages) {
+    if (message.role !== 'user') {
+      continue;
+    }
+    const text = readMessageText(message);
+    if (text) {
+      return text.length > 20 ? `${text.slice(0, 20)}...` : text;
+    }
+  }
+
+  return '新会话';
+};
+
+const formatTime = (timestamp: number) => new Date(timestamp).toLocaleString();
 
 const AIAgent = () => {
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const initialSessionIdRef = useRef(createId());
-  const [sessions, setSessions] = useState<ChatSession[]>(() => [
-    {
-      id: initialSessionIdRef.current,
-      title: '新会话',
-      messages: [],
-      updatedAt: Date.now(),
-    },
-  ]);
-  const [activeSessionId, setActiveSessionId] = useState(initialSessionIdRef.current);
-  const controllerRef = useRef<AbortController | null>(null);
-  const typingTimerRef = useRef<number | null>(null);
-  const typingQueueRef = useRef<string[]>([]);
-  const activeAssistantIdRef = useRef<string | null>(null);
-  const activeAssistantSessionIdRef = useRef<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [sessions, setSessions] = useState<ChatSession[]>(() => {
+    const initialId = createId();
+    return [
+      {
+        id: initialId,
+        title: '新会话',
+        updatedAt: Date.now(),
+        messages: [],
+      },
+    ];
+  });
+  const [activeSessionId, setActiveSessionId] = useState(() => sessions[0].id);
+  const [isChatScrolling, setIsChatScrolling] = useState(false);
+  const scrollTimerRef = useRef<number | null>(null);
 
   const activeSession = useMemo(
-    () => sessions.find((session) => session.id === activeSessionId),
-    [activeSessionId, sessions]
+    () => sessions.find((session) => session.id === activeSessionId) ?? sessions[0],
+    [activeSessionId, sessions],
   );
 
-  const messages = activeSession?.messages || [];
-
-  const canSend = useMemo(() => input.trim().length > 0 && !loading, [input, loading]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  useEffect(() => {
-    if (sessions.length > 0 && !sessions.some((session) => session.id === activeSessionId)) {
-      setActiveSessionId(sessions[0].id);
-    }
-  }, [activeSessionId, sessions]);
-
-  useEffect(() => {
-    return () => {
-      if (typingTimerRef.current) {
-        window.clearInterval(typingTimerRef.current);
-      }
-      controllerRef.current?.abort();
-    };
-  }, []);
-
-  const stopTyping = () => {
-    if (typingTimerRef.current) {
-      window.clearInterval(typingTimerRef.current);
-      typingTimerRef.current = null;
-    }
-  };
-
-  const enqueueTyping = (text: string, assistantId: string, sessionId: string) => {
-    if (!text) return;
-    activeAssistantIdRef.current = assistantId;
-    activeAssistantSessionIdRef.current = sessionId;
-    for (const char of text) {
-      typingQueueRef.current.push(char);
-    }
-    if (!typingTimerRef.current) {
-      typingTimerRef.current = window.setInterval(() => {
-        if (typingQueueRef.current.length === 0) {
-          stopTyping();
-          return;
-        }
-        const nextChar = typingQueueRef.current.shift();
-        if (!nextChar || !activeAssistantIdRef.current || !activeAssistantSessionIdRef.current) return;
-        setSessions((prev) =>
-          prev.map((session) =>
-            session.id === activeAssistantSessionIdRef.current
-              ? {
-                ...session,
-                messages: session.messages.map((item) =>
-                  item.id === activeAssistantIdRef.current
-                    ? { ...item, content: item.content + nextChar }
-                    : item
-                ),
-              }
-              : session
-          )
-        );
-      }, 18);
-    }
-  };
-
-  const parseSseChunk = (chunk: string) => {
-    const dataLines = chunk
-      .split('\n')
-      .filter((line) => line.startsWith('data:'))
-      .map((line) => line.replace(/^data:\s?/, ''))
-      .filter((line) => line && line !== '[DONE]');
-    return dataLines.join('');
-  };
-
-  const startStream = async (prompt: string, assistantId: string, sessionId: string) => {
-    const controller = new AbortController();
-    controllerRef.current = controller;
-
-    const response = await fetch('/api/Chat/ChatStream', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message: prompt, userId: '1209332', sessionId: "fb1f7f1471d7006049bf622407f39057" }),
-      signal: controller.signal,
-    });
-
-    if (!response.ok || !response.body) {
-      throw new Error('SSE connection failed');
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder('utf-8');
-    let buffer = '';
-
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const parts = buffer.split('\n\n');
-      buffer = parts.pop() || '';
-      for (const part of parts) {
-        const text = parseSseChunk(part);
-        enqueueTyping(text, assistantId, sessionId);
-      }
-    }
-
-    if (buffer) {
-      enqueueTyping(parseSseChunk(buffer), assistantId, sessionId);
-    }
-  };
-
-  const handleSend = async () => {
-    if (!canSend) return;
-    const prompt = input.trim();
-    setInput('');
-    const userId = createId();
-    const assistantId = createId();
-    const sessionId = activeSessionId;
-    setSessions((prev) =>
-      prev.map((session) =>
-        session.id === sessionId
-          ? {
-            ...session,
-            title: session.title === '新会话' ? getTitle(prompt) : session.title,
-            updatedAt: Date.now(),
-            messages: [
-              ...session.messages,
-              { id: userId, role: 'user', content: prompt },
-              { id: assistantId, role: 'assistant', content: '' },
-            ],
-          }
-          : session
-      )
-    );
-    setLoading(true);
-    try {
-      await startStream(prompt, assistantId, sessionId);
-    } catch (error) {
-      setSessions((prev) =>
-        prev.map((session) =>
-          session.id === sessionId
-            ? {
-              ...session,
-              messages: session.messages.map((item) =>
-                item.id === assistantId
-                  ? { ...item, content: '连接失败，请稍后重试。' }
-                  : item
-              ),
-            }
-            : session
-        )
-      );
-    } finally {
-      setLoading(false);
-      controllerRef.current = null;
-    }
-  };
-
-  const handleStop = () => {
-    controllerRef.current?.abort();
-    stopTyping();
-    setLoading(false);
-  };
-
   const handleCreateSession = () => {
-    handleStop();
     const newSession: ChatSession = {
       id: createId(),
       title: '新会话',
-      messages: [],
       updatedAt: Date.now(),
+      messages: [],
     };
     setSessions((prev) => [newSession, ...prev]);
     setActiveSessionId(newSession.id);
   };
 
   const handleSelectSession = (sessionId: string) => {
-    if (sessionId === activeSessionId) return;
-    if (loading) {
-      handleStop();
-    }
     setActiveSessionId(sessionId);
   };
 
-  return (
-    <Layout className="ai-agent-page">
-      <Layout.Sider className="ai-agent-sessions">
-        <Space className="ai-agent-sessions-header" align="center">
-          <Title heading={6}>历史会话</Title>
-          <Button type="text" size="mini" icon={<IconPlus />} onClick={handleCreateSession}>
-            新建
-          </Button>
-        </Space>
-        <Space direction="vertical" size={8} className="ai-agent-session-space">
-          <Space className="ai-agent-session-spacer" />
-          <List
-            className="ai-agent-session-list"
-            dataSource={sessions}
-            render={(session) => (
-              <List.Item
-                key={session.id}
-                className={`ai-agent-session-item${session.id === activeSessionId ? ' is-active' : ''
-                  }`}
-                onClick={() => handleSelectSession(session.id)}
-              >
-                <Space direction="vertical" size={4} style={{ width: '100%' }}>
-                  <Text className="ai-agent-session-title">{session.title}</Text>
-                  <Text type="secondary" className="ai-agent-session-meta">
-                    {new Date(session.updatedAt).toLocaleString()}
-                  </Text>
-                </Space>
-              </List.Item>
-            )}
-          />
-          <Space className="ai-agent-session-spacer" />
-        </Space>
-      </Layout.Sider>
-      <Layout.Content className="ai-agent-panel">
-        <Card className="ai-agent-messages" bordered={false}>
-          <Space direction="vertical" size={16} style={{ width: '100%' }}>
-            {messages.length === 0 ? (
-              <Text className="ai-agent-empty">暂无对话，开始一个新问题吧。</Text>
-            ) : (
-              messages.map((item) => (
-                <Space key={item.id} className={`ai-agent-message ${item.role}`} align="start">
-                  <Avatar size={28} className="ai-agent-avatar">
-                    {item.role === 'user' ? 'U' : 'AI'}
-                  </Avatar>
-                  <Card className="ai-agent-bubble" bordered={false}>
-                    <Paragraph style={{ marginBottom: 0, whiteSpace: 'pre-wrap' }}>
-                      {item.content || (item.role === 'assistant' ? '...' : '')}
-                    </Paragraph>
-                  </Card>
-                </Space>
-              ))
-            )}
-            <span ref={messagesEndRef} />
-          </Space>
-        </Card>
+  const handleMessageChange = (event: MessageChangeEvent) => {
+    const nextMessages = event.detail as ChatMessagesData[];
+    setSessions((prev) =>
+      prev.map((session) =>
+        session.id === activeSessionId
+          ? {
+              ...session,
+              messages: nextMessages,
+              updatedAt: Date.now(),
+              title: readSessionTitle(nextMessages),
+            }
+          : session,
+      ),
+    );
+  };
 
-        <Card className="ai-agent-input" bordered={false}>
-          <Space direction="vertical" size={12} style={{ width: '100%' }}>
-            <TextArea
-              value={input}
-              placeholder="请输入你想咨询的问题，Ctrl + Enter 发送"
-              autoSize={{ minRows: 3, maxRows: 6 }}
-              onChange={setInput}
-              onKeyDown={(event) => {
-                if (event.ctrlKey && event.key === 'Enter') {
-                  handleSend();
-                }
-              }}
-            />
-            <Space className="ai-agent-actions" size={12} align="center">
-              <Button type="primary" onClick={handleSend} loading={loading} disabled={!input.trim()}>
-                发送
-              </Button>
-              <Button onClick={handleStop} disabled={!loading}>
-                停止
-              </Button>
-            </Space>
+  const handleChatScrollActivity = () => {
+    setIsChatScrolling(true);
+    if (scrollTimerRef.current) {
+      window.clearTimeout(scrollTimerRef.current);
+    }
+    scrollTimerRef.current = window.setTimeout(() => {
+      setIsChatScrolling(false);
+      scrollTimerRef.current = null;
+    }, 900);
+  };
+
+  return (
+    <div className="ai-agent-page">
+      <aside className="ai-agent-sessions">
+        <Button className="ai-agent-new-session-btn" icon={<AddIcon />} onClick={handleCreateSession}>
+          新建
+        </Button>
+
+        <div className="ai-agent-history-panel">
+          <Space align="center" className="ai-agent-history-header">
+            <span className="ai-agent-history-title">会话列表</span>
           </Space>
-        </Card>
-      </Layout.Content>
-    </Layout>
+
+          <div className="ai-agent-sessions-list">
+            {sessions.length === 0 ? (
+              <Empty description="暂无历史会话" />
+            ) : (
+              <Menu
+                className="ai-agent-session-menu"
+                value={activeSessionId}
+                expanded={[]}
+                onChange={(value) => handleSelectSession(String(value))}
+              >
+                {sessions.map((session) => (
+                  <Menu.MenuItem key={session.id} value={session.id} className="ai-agent-session-menu-item">
+                    <div className="ai-agent-session-title-text">{session.title}</div>
+                    <div className="ai-agent-session-meta">{formatTime(session.updatedAt)}</div>
+                  </Menu.MenuItem>
+                ))}
+              </Menu>
+            )}
+          </div>
+        </div>
+      </aside>
+
+      <div
+        className={`ai-agent-content${isChatScrolling ? ' is-chat-scrolling' : ''}`}
+        onWheel={handleChatScrollActivity}
+        onTouchMove={handleChatScrollActivity}
+      >
+        <ChatBot
+          key={activeSession.id}
+          className="ai-agent-chatbot"
+          defaultMessages={activeSession.messages}
+          listProps={{
+            autoScroll: true,
+            defaultScrollTo: 'bottom',
+          }}
+          onMessageChange={handleMessageChange}
+          chatServiceConfig={{
+            endpoint: '/api/Chat/ChatStream',
+            stream: true,
+            onRequest: ({ prompt, ...rest }) => ({
+              ...rest,
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                message: prompt,
+                userId: '1209332',
+                sessionId: activeSession.id,
+              }),
+            }),
+            onMessage: (chunk) => {
+              const data = chunk?.data;
+              if (typeof data === 'string') {
+                if (data === '[DONE]') {
+                  return null;
+                }
+                return { type: 'text', data, strategy: 'append' };
+              }
+              return null;
+            },
+          }}
+        />
+      </div>
+    </div>
   );
 };
 
