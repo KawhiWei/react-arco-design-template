@@ -1,7 +1,7 @@
 import { Breadcrumb } from 'tdesign-react';
 
 const { BreadcrumbItem } = Breadcrumb;
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet, useLocation, useMatches } from 'react-router-dom';
 
 import { getMenuList } from '../../../api/auth';
@@ -15,6 +15,10 @@ const PublicContent = () => {
     const { pathname } = useLocation();
     const matches = useMatches();
     const [menuMap, setMenuMap] = useState<Record<string, MenuInfo>>({});
+    const contentInnerRef = useRef<HTMLDivElement | null>(null);
+    const breadcrumbHeaderRef = useRef<HTMLDivElement | null>(null);
+    const contentRef = useRef<HTMLDivElement | null>(null);
+    const [contentMaxHeight, setContentMaxHeight] = useState<number>();
 
     useEffect(() => {
         getMenuList().then(res => {
@@ -58,21 +62,67 @@ const PublicContent = () => {
         }));
     }, [menuMap, matches, pathname]);
 
+    const updateContentMaxHeight = useCallback(() => {
+        if (!contentRef.current) {
+            return;
+        }
+        const { top } = contentRef.current.getBoundingClientRect();
+        const nextHeight = Math.max(Math.floor(window.innerHeight - top), 0);
+        setContentMaxHeight((prev) => (prev === nextHeight ? prev : nextHeight));
+    }, []);
+
+    useEffect(() => {
+        updateContentMaxHeight();
+
+        const frame = window.requestAnimationFrame(() => {
+            updateContentMaxHeight();
+        });
+
+        return () => {
+            window.cancelAnimationFrame(frame);
+        };
+    }, [breadcrumbItems.length, pathname, updateContentMaxHeight]);
+
+    useEffect(() => {
+        updateContentMaxHeight();
+
+        const resizeObserver = new ResizeObserver(() => {
+            updateContentMaxHeight();
+        });
+
+        if (contentInnerRef.current) {
+            resizeObserver.observe(contentInnerRef.current);
+        }
+
+        if (breadcrumbHeaderRef.current) {
+            resizeObserver.observe(breadcrumbHeaderRef.current);
+        }
+
+        window.addEventListener('resize', updateContentMaxHeight);
+
+        return () => {
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', updateContentMaxHeight);
+        };
+    }, [breadcrumbItems.length, updateContentMaxHeight]);
+
 
     return (
 
         <Suspense>
-            {breadcrumbItems.length > 0 && (
-                <div className="layout-content-header">
-                    <Breadcrumb className="layout-content-breadcrumb">
-                        {breadcrumbItems.map(item => (
-                            <BreadcrumbItem key={item.key}>{item.label}</BreadcrumbItem>
-                        ))}
-                    </Breadcrumb>
+            <div className="layout-content-inner" ref={contentInnerRef}>
+                {breadcrumbItems.length > 0 && (
+                    <div className="layout-content-header" ref={breadcrumbHeaderRef}>
+                        <Breadcrumb className="layout-content-breadcrumb">
+                            {breadcrumbItems.map(item => (
+                                <BreadcrumbItem key={item.key}>{item.label}</BreadcrumbItem>
+                            ))}
+                        </Breadcrumb>
+                    </div>
+                )}
+                <div className="layout-main-content" ref={contentRef} style={{ maxHeight: contentMaxHeight }}>
+                    <Outlet />
                 </div>
-            )}
-            <div className="layout-main-content" >
-                <Outlet />
             </div>
 
         </Suspense>

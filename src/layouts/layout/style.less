@@ -99,7 +99,7 @@
       padding: 0;
       display: flex;
       align-items: center;
-      height: 40px;
+      height: 40px; 
       overflow: hidden;
 
       .logo-title {
@@ -127,26 +127,41 @@
   .layout-content {
     flex: 1;
     min-height: 0;
-    overflow: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     background-color: var(--td-bg-color-page);
-    padding: 20px 24px 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .layout-content-inner {
+    flex: 1;
+    min-height: 0;
+    padding-top: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    background: var(--td-bg-color-page);
   }
 
   .layout-content-header {
-    position: sticky;
-    top: 0;
+    flex-shrink: 0;
     z-index: 5;
     background: var(--td-bg-color-page);
-    padding-bottom: 16px;
+    padding: 0 24px 16px;
   }
 
   .layout-content-breadcrumb {
-    margin-bottom: 8px;
+    margin-bottom: 0;
   }
 
   .layout-main-content {
+    flex: 1;
     min-height: 0;
+    overflow: auto;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+    padding: 0 24px 20px;
+    box-sizing: border-box;
   }
 
   .layout-footer {

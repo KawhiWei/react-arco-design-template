@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 *.lock
 package-lock.json
+
+# OpenSpec local tool configs
+.opencode/
+.github/
+
