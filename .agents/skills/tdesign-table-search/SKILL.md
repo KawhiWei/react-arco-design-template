@@ -1,87 +1,107 @@
 ---
 name: tdesign-table-search
-description: Build a TDesign starter/base style page with search bar, query/reset actions, table list, and pagination.
+description: Build a TDesign starter/base style searchable table page with query/reset, pagination, and table-only scrolling.
 compatibility: Generic project-level .agents skill format
 ---
 
-Use this skill when user asks for a page with:
-- Search/filter bar
-- Query and reset actions
-- Data table list
+Use this skill when user asks for a page that contains:
+- Search/filter form
+- Query + reset actions
+- Table list
 - Optional pagination
 
-Deliverable requirement (must include all):
+Deliverables (all required):
 - A complete runnable page component (`index.tsx`)
-- Stable typed mock data and columns
-- Filter state + query/reset handlers
-- Pagination state with page-size switching events
-- Table internal scrolling when rows exceed height (page should not scroll)
+- Typed mock row model and typed table columns
+- Controlled filter state with query/reset handlers
+- Pagination state (`current`, `pageSize`, `total`) and page-size switching handlers
+- Table-only scrolling when rows exceed height (avoid page-level scrollbar)
 
-Implementation workflow:
+Implementation blueprint (reference: `src/pages/field-value-mapping-config/index.tsx`):
 
-1. Build structure
-- Top search section with `Form` + `Input/Select`
-- Action buttons (`Button theme="primary"` for query, base/outline for reset)
-- Table section below (`Table` with stable `rowKey`)
-- Optional `Pagination` at bottom-right
+1) Page structure
+- Search card at top: `Card` + `Form` + `Input/Select`
+- Actions: `Button theme="primary"` for query, `Button variant="base"` for reset
+- Table card below: `Table` with stable `rowKey`
+- Pagination aligned bottom-right
 
-2. Baseline code contract
-- Keep state:
-  - `current`, `pageSize`, `total`
-  - filter fields (`keyword`, etc.)
-- Implement handlers:
-  - `onCurrentChange(current)`
-  - `onPageSizeChange(size)` and reset `current` to 1
-- Recompute current page data with `useMemo`
-- Use table scroll props so row overflow scrolls inside table, not whole page:
-  - `maxHeight` (or `height`) and/or `scroll={{ type: 'virtual', ... }}` if needed in project
+2) State contract
+- Filters:
+  - `filters`: form editing state
+  - `appliedFilters`: state actually used by table query
+- Pagination:
+  - `current`, `pageSize`
+  - derived `total`
+- Scroll:
+  - `tableMaxHeight` (dynamic)
+  - optional `tableWrapRef` for more accurate viewport remaining-height calculation
 
-Example pagination wiring:
+3) Query behavior contract
+- Query button:
+  - set `appliedFilters = filters`
+  - reset `current = 1`
+- Reset button:
+  - restore default filters
+  - set `appliedFilters = defaultFilters`
+  - set `current = 1`
+
+4) Data derivation contract (`useMemo`)
+- `filteredData`: derived from `sourceData` + `appliedFilters`
+- `pagedData`: slice by `current` and `pageSize`
+- `total = filteredData.length`
+
+5) Pagination event contract
+- Must include:
+  - `onCurrentChange(next) => setCurrent(next)`
+  - `onPageSizeChange(size) => setPageSize(Number(size)); setCurrent(1)`
+
+6) Table scrolling contract (important)
+- Baseline default (fallback only):
+  - `Math.max(window.innerHeight - 200, 260)`
+- Required robust version (same style as reference page):
+  - compute by `tableWrapRef.current.getBoundingClientRect().top`
+  - `maxHeight = Math.max(window.innerHeight - top - 110, 260)`
+  - fallback to baseline when ref unavailable
+  - run on mount, run again in `requestAnimationFrame`, and update on `resize`
+- Goal: row overflow must scroll in table area, not whole page
+
+Reference snippet:
 
 ```tsx
-<Pagination
-  total={filtered.length}
-  current={current}
-  pageSize={pageSize}
-  pageSizeOptions={[10, 20, 50]}
-  showPageSize
-  showJumper
-  onCurrentChange={(next) => setCurrent(next)}
-  onPageSizeChange={(size) => {
-    setPageSize(Number(size));
-    setCurrent(1);
-  }}
-/>
+const [filters, setFilters] = useState(defaultFilters);
+const [appliedFilters, setAppliedFilters] = useState(defaultFilters);
+const [current, setCurrent] = useState(1);
+const [pageSize, setPageSize] = useState(10);
+const [tableMaxHeight, setTableMaxHeight] = useState(() => Math.max(window.innerHeight - 200, 260));
+
+const handleQuery = () => {
+  setAppliedFilters(filters);
+  setCurrent(1);
+};
+
+const handleReset = () => {
+  setFilters(defaultFilters);
+  setAppliedFilters(defaultFilters);
+  setCurrent(1);
+};
+
+const filteredData = useMemo(() => {
+  // filter by appliedFilters
+}, [appliedFilters]);
+
+const pagedData = useMemo(() => {
+  const start = (current - 1) * pageSize;
+  return filteredData.slice(start, start + pageSize);
+}, [filteredData, current, pageSize]);
 ```
 
-Example table internal scroll:
+7) Visual and coding conventions
+- Keep spacing compact and consistent with TDesign starter/base pages
+- Prefer inline style for small spacing adjustments; avoid heavy custom CSS
+- Use stable literal options and deterministic mock data
+- Avoid `any` in newly generated page code
 
-```tsx
-const tableMaxHeight = useMemo(() => Math.max(window.innerHeight - 200, 260), []);
-
-<Table
-  rowKey="id"
-  columns={columns}
-  data={pagedData}
-  maxHeight={tableMaxHeight}
-/>
-```
-
-Default rule:
-- `Table maxHeight` should be `window.innerHeight - 200`
-- Keep a small lower bound (e.g. `260`) to avoid too-small table areas on tiny windows
-
-3. Keep behavior clear
-- Controlled filter state in React
-- Query applies filters to data source
-- Reset restores defaults and resets page index
-
-4. Follow visual conventions
-- Compact spacing similar to TDesign starter/base
-- Avoid heavy custom CSS
-- Use subtle container/card backgrounds and clear section spacing
-- Prefer table-area scrollbar; avoid page-level scroll for long list sections
-
-5. Verification
-- Ensure file-level lint clean when possible
-- `npm run build` must pass
+8) Verification checklist
+- Ensure target page compiles and is directly runnable
+- Prefer running `npx eslint <target-file>` when possible
+- Must run `npm run build` and pass before finish

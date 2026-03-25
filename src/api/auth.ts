@@ -36,10 +36,54 @@ export const getMenuList = () => {
                     children: []
                 },
                 {
-                    id: '2-1',
-                    route: '/customer-rule',
-                    componentPath: '/ancillary-customer-rule/index.tsx',
-                    name: '销售单规则',
+                    id: '2-2',
+                    route: '/field-value-mapping-config',
+                    componentPath: '/field-value-mapping-config/index.tsx',
+                    name: '字段取值配置',
+                    show: true,
+                    iconName: null,
+                    parentId: '2',
+                    parentPaths: Array<string>,
+                    children: []
+                },
+                {
+                    id: '2-3',
+                    route: '/product-config',
+                    componentPath: '/product-config/index.tsx',
+                    name: '产品配置',
+                    show: true,
+                    iconName: null,
+                    parentId: '2',
+                    parentPaths: Array<string>,
+                    children: []
+                },
+                {
+                    id: '2-4',
+                    route: '/sale-ref-id-mapping-config',
+                    componentPath: '/sale-ref-id-mapping-config/index.tsx',
+                    name: 'saleRefId 映射配置',
+                    show: true,
+                    iconName: null,
+                    parentId: '2',
+                    parentPaths: Array<string>,
+                    children: []
+                },
+                {
+                    id: '2-5',
+                    route: '/company-subject-mapping-config',
+                    componentPath: '/company-subject-mapping-config/index.tsx',
+                    name: '公司主体映射配置',
+                    show: true,
+                    iconName: null,
+                    parentId: '2',
+                    parentPaths: Array<string>,
+                    children: []
+                },
+                {
+                    id: '2-6',
+                    route: '/dictionary-config',
+                    componentPath: '/dictionary-config/index.tsx',
+                    name: '字典配置',
                     show: true,
                     iconName: null,
                     parentId: '2',
