@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Card, Form, Input, Pagination, Select, Space, Table, type TableProps } from 'tdesign-react';
+import { Button, Card, Checkbox, Form, Input, Pagination, Select, Space, Table, type TableProps } from 'tdesign-react';
 
 type ProductStatus = '启用' | '停用';
 type ProductType = '标准产品' | '增值产品' | '渠道产品';
@@ -12,6 +12,17 @@ type ProductConfigItem = {
   status: ProductStatus;
   version: string;
   updatedAt: string;
+};
+
+type GroupScenario = {
+  label: string;
+  value: string;
+};
+
+type ProductSceneGroup = {
+  id: string;
+  name: string;
+  scenarios: GroupScenario[];
 };
 
 type FilterState = {
@@ -79,13 +90,45 @@ const columns: TableProps<ProductConfigItem>['columns'] = [
   },
 ];
 
+const groupNameSeed = ['订单管理组', '库存管理组', '价格策略组', '渠道分发组', '结算核算组', '运营分析组'];
+const sceneSeed: GroupScenario[] = [
+  { label: '场景A', value: 'scene_a' },
+  { label: '场景B', value: 'scene_b' },
+  { label: '场景C', value: 'scene_c' },
+  { label: '场景D', value: 'scene_d' },
+];
+
+const buildSceneGroups = (item: ProductConfigItem): ProductSceneGroup[] => {
+  const suffix = Number.parseInt(item.id.replace('PC-', ''), 10) || 1;
+  const groupCount = (suffix % 4) + 2;
+  return Array.from({ length: groupCount }).map((_, index) => {
+    const groupName = groupNameSeed[(index + suffix) % groupNameSeed.length];
+    return {
+      id: `group_${index + 1}`,
+      name: `${groupName}${index + 1}`,
+      scenarios: sceneSeed,
+    };
+  });
+};
+
 const ProductConfigPage = () => {
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(defaultFilters);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [expandedRowKeys, setExpandedRowKeys] = useState<Array<string | number>>([]);
+  const [checkedSceneMap, setCheckedSceneMap] = useState<Record<string, Record<string, Array<string | number | boolean>>>>(
+    {},
+  );
   const [tableMaxHeight, setTableMaxHeight] = useState(() => Math.max(window.innerHeight - 200, 260));
   const tableWrapRef = useRef<HTMLDivElement | null>(null);
+
+  const productSceneGroupMap = useMemo(() => {
+    return sourceData.reduce<Record<string, ProductSceneGroup[]>>((prev, item) => {
+      prev[item.id] = buildSceneGroups(item);
+      return prev;
+    }, {});
+  }, []);
 
   useEffect(() => {
     const updateTableMaxHeight = () => {
@@ -139,6 +182,16 @@ const ProductConfigPage = () => {
     setFilters(defaultFilters);
     setAppliedFilters(defaultFilters);
     setCurrent(1);
+  };
+
+  const handleSceneChange = (rowId: string, groupId: string, value: Array<string | number | boolean>) => {
+    setCheckedSceneMap((prev) => ({
+      ...prev,
+      [rowId]: {
+        ...(prev[rowId] || {}),
+        [groupId]: value,
+      },
+    }));
   };
 
   return (
@@ -206,6 +259,35 @@ const ProductConfigPage = () => {
             verticalAlign="middle"
             maxHeight={tableMaxHeight}
             tableLayout="fixed"
+            expandedRowKeys={expandedRowKeys}
+            onExpandChange={(keys) => setExpandedRowKeys(keys)}
+            expandedRow={({ row }) => {
+              const rowId = String(row.id);
+              const sceneGroups = productSceneGroupMap[rowId] || [];
+              return (
+                <div style={{ padding: '8px 0' }}>
+                  <Space direction="vertical" size={12} style={{ width: '100%' }}>
+                    {sceneGroups.map((group) => (
+                      <div
+                        key={`${rowId}-${group.id}`}
+                        style={{
+                          background: 'var(--td-bg-color-container-hover)',
+                          borderRadius: 6,
+                          padding: '10px 12px',
+                        }}
+                      >
+                        <div style={{ marginBottom: 8, fontWeight: 500 }}>{group.name}</div>
+                        <Checkbox.Group
+                          options={group.scenarios}
+                          value={checkedSceneMap[rowId]?.[group.id] || []}
+                          onChange={(value) => handleSceneChange(rowId, group.id, value)}
+                        />
+                      </div>
+                    ))}
+                  </Space>
+                </div>
+              );
+            }}
           />
         </div>
 
