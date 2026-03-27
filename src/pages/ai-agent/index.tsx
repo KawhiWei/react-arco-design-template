@@ -4,7 +4,7 @@ import '@tdesign-react/chat/es/style/index.js';
 import { ChatBot } from '@tdesign-react/chat';
 import type { ChatMessagesData } from 'tdesign-web-components/lib/chat-engine/type';
 import { Button, Empty, Menu, Space } from 'tdesign-react';
-import { AddIcon } from 'tdesign-icons-react';
+import { AddIcon, ChatIcon, UserIcon } from 'tdesign-icons-react';
 import { useMemo, useRef, useState } from 'react';
 
 type ChatBotProps = React.ComponentProps<typeof ChatBot>;
@@ -71,6 +71,28 @@ const AIAgent = () => {
   const activeSession = useMemo(
     () => sessions.find((session) => session.id === activeSessionId) ?? sessions[0],
     [activeSessionId, sessions],
+  );
+
+  const messageProps = useMemo(
+    () => ({
+      assistant: {
+        name: 'AI 助手',
+        avatar: (
+          <span className="ai-agent-avatar ai-agent-avatar-assistant">
+            <ChatIcon size="14px" />
+          </span>
+        ),
+      },
+      user: {
+        name: '我',
+        avatar: (
+          <span className="ai-agent-avatar ai-agent-avatar-user">
+            <UserIcon size="14px" />
+          </span>
+        ),
+      },
+    }),
+    [],
   );
 
   const handleCreateSession = () => {
@@ -158,6 +180,7 @@ const AIAgent = () => {
           key={activeSession.id}
           className="ai-agent-chatbot"
           defaultMessages={activeSession.messages}
+          messageProps={messageProps}
           listProps={{
             autoScroll: true,
             defaultScrollTo: 'bottom',
@@ -184,7 +207,8 @@ const AIAgent = () => {
                 if (data === '[DONE]') {
                   return null;
                 }
-                return { type: 'text', data, strategy: 'append' };
+                const normalized = data.replace(/\r/g, '');
+                return { type: 'text', data: normalized, strategy: 'merge' };
               }
               return null;
             },

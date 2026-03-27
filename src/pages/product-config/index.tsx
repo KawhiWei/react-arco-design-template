@@ -3,12 +3,22 @@ import { Button, Card, Checkbox, Form, Input, Pagination, Select, Space, Table, 
 
 type ProductStatus = '启用' | '停用';
 type ProductType = '标准产品' | '增值产品' | '渠道产品';
+type ReleaseChannel = '直销' | '代理' | '电商' | '生态';
+type RiskLevel = '低' | '中' | '高';
+type PriceMode = '固定价' | '阶梯价' | '协议价';
 
 type ProductConfigItem = {
   id: string;
   productCode: string;
   productName: string;
   productType: ProductType;
+  ownerDept: string;
+  manager: string;
+  releaseChannel: ReleaseChannel;
+  riskLevel: RiskLevel;
+  priceMode: PriceMode;
+  monthlySales: number;
+  effectiveDate: string;
   status: ProductStatus;
   version: string;
   updatedAt: string;
@@ -37,17 +47,35 @@ const defaultFilters: FilterState = {
   status: '',
 };
 
-const sourceData: ProductConfigItem[] = Array.from({ length: 72 }).map((_, index) => {
+const sourceData: ProductConfigItem[] = Array.from({ length: 240 }).map((_, index) => {
   const seq = index + 1;
   const productTypes: ProductType[] = ['标准产品', '增值产品', '渠道产品'];
+  const releaseChannels: ReleaseChannel[] = ['直销', '代理', '电商', '生态'];
+  const ownerDepts = ['产品中心', '营销中心', '运营中心', '渠道中心', '生态业务部'];
+  const managers = ['张明', '李雪', '王鹏', '赵倩', '周航', '陈晨', '吴昊'];
+  const riskLevel: RiskLevel = seq % 9 === 0 ? '高' : seq % 3 === 0 ? '中' : '低';
+  const priceMode: PriceMode = seq % 10 === 0 ? '协议价' : seq % 4 === 0 ? '阶梯价' : '固定价';
+  const releaseChannel = releaseChannels[(index * 2 + 1) % releaseChannels.length];
+  const isDisabled = seq % 11 === 0 || seq % 17 === 0;
+  const month = ((index % 12) + 1).toString().padStart(2, '0');
+  const day = ((index % 27) + 1).toString().padStart(2, '0');
+  const minute = ((index * 7) % 60).toString().padStart(2, '0');
+
   return {
     id: `PC-${String(seq).padStart(4, '0')}`,
-    productCode: `PROD_${String((index % 20) + 1).padStart(3, '0')}`,
-    productName: `产品配置 ${seq}`,
+    productCode: `PROD_${String((index % 48) + 1).padStart(3, '0')}`,
+    productName: `${productTypes[index % productTypes.length]}产品 ${String((index % 48) + 1).padStart(2, '0')}`,
     productType: productTypes[index % productTypes.length],
-    status: index % 4 === 0 ? '停用' : '启用',
+    ownerDept: ownerDepts[(index + 2) % ownerDepts.length],
+    manager: managers[(index * 3 + 1) % managers.length],
+    releaseChannel,
+    riskLevel,
+    priceMode,
+    monthlySales: 800 + ((seq * 137) % 9200),
+    effectiveDate: `2026-${month}-${day}`,
+    status: isDisabled ? '停用' : '启用',
     version: `v${Math.floor(index / 12) + 1}.${(index % 6) + 1}.0`,
-    updatedAt: `2026-03-${String((index % 28) + 1).padStart(2, '0')} 14:30`,
+    updatedAt: `2026-03-${String((index % 28) + 1).padStart(2, '0')} ${String(9 + (index % 10)).padStart(2, '0')}:${minute}`,
   };
 });
 
@@ -69,6 +97,13 @@ const columns: TableProps<ProductConfigItem>['columns'] = [
   { colKey: 'productCode', title: '产品编码', width: 140 },
   { colKey: 'productName', title: '产品名称', minWidth: 220, ellipsis: true },
   { colKey: 'productType', title: '产品类型', width: 120 },
+  { colKey: 'ownerDept', title: '归属部门', width: 130 },
+  { colKey: 'manager', title: '负责人', width: 100 },
+  { colKey: 'releaseChannel', title: '发布渠道', width: 110 },
+  { colKey: 'priceMode', title: '定价模式', width: 110 },
+  { colKey: 'riskLevel', title: '风险等级', width: 100 },
+  { colKey: 'monthlySales', title: '月销量', width: 110 },
+  { colKey: 'effectiveDate', title: '生效日期', width: 130 },
   { colKey: 'version', title: '版本', width: 100 },
   { colKey: 'status', title: '状态', width: 100 },
   { colKey: 'updatedAt', title: '更新时间', width: 180 },
