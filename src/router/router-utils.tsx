@@ -5,13 +5,16 @@ export const toLoginPage = () => {
     router.navigate('/login');
 }
 
-function findNodeByPath(routes: RouteObject[], path: string) {
+function findNodeByPath(routes: RouteObject[], path: string): RouteObject | undefined {
     for (let i = 0; i < routes.length; i += 1) {
         const element = routes[i];
 
-        if (element.path === path) return element;
+        if (element.path === path || element.id === path) return element;
 
-        findNodeByPath(element.children || [], path);
+        const childNode = findNodeByPath(element.children || [], path);
+        if (childNode) {
+            return childNode;
+        }
     }
 }
 

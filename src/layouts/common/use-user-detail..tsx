@@ -16,7 +16,6 @@ const useUserDetail = () => {
          */
         // document.body.setAttribute('arco-theme', 'dark');
         getMenuList().then(res => {
-            setLoading(false);
             function formatMenus(
                 menus: any[],
                 menuGroup: Record<string, any[]>,
@@ -75,14 +74,15 @@ const useUserDetail = () => {
             /**
              * 路由替换，此处试讲所有路由拉平，不包含二级路由等，菜单与路由分开处理
              */
-            replaceRoutes('*', [
+            replaceRoutes('protected-layout', [
                 ...routes.map(menu => {
                     /**
                      * @description: 路由格式化将二级路由和一级路由合并生成路由列表
                      */
+                    const routePath = menu.path.replace(/^\//, '');
                     var route = {
-                        path: `/*${menu.path}`,
-                        id: `/*${menu.path}`,
+                        path: routePath,
+                        id: menu.path,
                         // Component: menu.componentPath ? lazy(modules[`../pages/${menu.componentPath}/index.tsx`]) : ErrorPage,
                         Component: menu.componentPath ? lazyLoad[menu.componentPath] ? lazy(lazyLoad[menu.componentPath]) : ErrorPage : ErrorPage,
                         name: menu.name,
@@ -104,8 +104,12 @@ const useUserDetail = () => {
                     },
                 }
             ]);
-            // replace一下当前路由，为了触发路由匹配
-            router.navigate(`${location.pathname}${location.search}`, { replace: true });
+            router.navigate(`${location.pathname}${location.search}${location.hash}`, {
+                replace: true,
+                state: {
+                    routeReloadAt: Date.now(),
+                },
+            });
             setLoading(false);
         })
 

@@ -1,6 +1,7 @@
 import { RouteObject } from 'react-router-dom';
 
 import ErrorPage from '../components/error';
+import GlobalLoading from '../components/global-loading';
 import PublicLayout from '../layouts/layout';
 import Login from '../pages/login';
 import { HomeRedirect, RedirectIfAuthenticated, RequireAuth } from './auth';
@@ -23,9 +24,15 @@ export const routes: RouteObject[] = [
     element: <RequireAuth />,
     children: [
       {
-        path: '*',
+        id: 'protected-layout',
+        path: '/',
         Component: PublicLayout,
-        children: [],
+        children: [
+          {
+            path: '*',
+            Component: GlobalLoading,
+          },
+        ],
         errorElement: <ErrorPage />,
       },
     ],
