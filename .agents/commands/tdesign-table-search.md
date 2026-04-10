@@ -2,7 +2,12 @@
 description: Scaffold/refactor a TDesign searchable table page using the field-value-mapping-config pattern
 ---
 
-Create or refactor a page to match this structure:
+First, load and follow the skill `tdesign-table-search`.
+
+Use the following as task input (if provided):
+- Target page/path: $ARGUMENTS
+
+Then create or refactor a page to match this structure:
 - Search bar (`Form`, `Input`, optional `Select`)
 - Query + reset actions
 - Data table list

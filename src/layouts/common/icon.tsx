@@ -1,4 +1,4 @@
-import { DashboardIcon, RobotIcon, SettingIcon } from 'tdesign-icons-react';
+import { DashboardIcon, RobotIcon, SettingIcon, UserIcon } from 'tdesign-icons-react';
 
 interface IProp {
     iconName: string;
@@ -7,7 +7,8 @@ interface IProp {
 const iconMap: Record<string, React.ReactNode> = {
     "ruleConfig": <SettingIcon />,
     "dashboard": <DashboardIcon />,
-    "aiAgent": <RobotIcon />
+    "aiAgent": <RobotIcon />,
+    "user": <UserIcon />
 };
 
 const IconRenderer = (iconName: string) => {

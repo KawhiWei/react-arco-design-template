@@ -90,6 +90,17 @@ export const getMenuList = () => {
                     parentPaths: Array<string>,
                     children: []
                 },
+                {
+                    id: '3',
+                    route: '/user-management',
+                    componentPath: '/user-management/index.tsx',
+                    name: '用户管理',
+                    show: true,
+                    iconName: "user",
+                    parentId: null,
+                    parentPaths: Array<string>,
+                    children: [],
+                },
                 // {
                 //     id: '3',
                 //     route: '/ancillary',
