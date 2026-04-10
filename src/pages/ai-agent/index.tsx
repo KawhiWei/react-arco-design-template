@@ -2,10 +2,10 @@ import './style.less';
 import '@tdesign-react/chat/es/style/index.js';
 
 import { ChatBot } from '@tdesign-react/chat';
-import type { ChatMessagesData } from 'tdesign-web-components/lib/chat-engine/type';
+import { AddIcon } from 'tdesign-icons-react';
 import { Button, Empty, Menu, Space } from 'tdesign-react';
-import { AddIcon, ChatIcon, UserIcon } from 'tdesign-icons-react';
 import { useMemo, useRef, useState } from 'react';
+import type { ChatMessagesData } from 'tdesign-web-components/lib/chat-engine/type';
 
 type ChatBotProps = React.ComponentProps<typeof ChatBot>;
 type MessageChangeEvent = Parameters<NonNullable<ChatBotProps['onMessageChange']>>[0];
@@ -16,6 +16,30 @@ type ChatSession = {
   updatedAt: number;
   messages: ChatMessagesData[];
 };
+
+type ProductConfigAnswer = {
+  summary: string;
+  displayText: string;
+  productInfo: {
+    environment: string;
+    resourceCode: string;
+    productCode: string;
+    financeCode: string;
+    goldToadCode: string;
+  };
+  mappings: Array<{
+    sceneType: string;
+    sceneName: string;
+    receiptType: string;
+    receiptName: string;
+  }>;
+};
+
+type StructuredChatEvent =
+  | { event: 'meta'; data: ProductConfigAnswer }
+  | { event: 'text'; data: string }
+  | { event: 'done'; data: { rawAnswer?: string } }
+  | { event: 'error'; data: { message?: string } };
 
 const createId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
@@ -50,7 +74,133 @@ const readSessionTitle = (messages: ChatMessagesData[]) => {
   return '新会话';
 };
 
+const normalizeMarkdownText = (text: string) => {
+  return text
+    .replace(/\r\n/g, '\n')
+    .replace(/\\r\\n/g, '\n')
+    .replace(/\\n/g, '\n')
+    .replace(/\\t/g, '  ')
+    .trim();
+};
+
+const parseStructuredDto = (payload: unknown): ProductConfigAnswer | null => {
+  const source = (() => {
+    if (typeof payload === 'string') {
+      try {
+        return JSON.parse(payload) as unknown;
+      } catch {
+        return null;
+      }
+    }
+    return payload;
+  })();
+
+  if (!source || typeof source !== 'object') {
+    return null;
+  }
+
+  const dto = source as {
+    summary?: unknown;
+    displayText?: unknown;
+    productInfo?: Record<string, unknown>;
+    mappings?: Array<Record<string, unknown>>;
+  };
+
+  return {
+    summary: typeof dto.summary === 'string' ? dto.summary : '',
+    displayText: typeof dto.displayText === 'string' ? dto.displayText : '',
+    productInfo: {
+      environment: String(dto.productInfo?.environment ?? ''),
+      resourceCode: String(dto.productInfo?.resourceCode ?? ''),
+      productCode: String(dto.productInfo?.productCode ?? ''),
+      financeCode: String(dto.productInfo?.financeCode ?? ''),
+      goldToadCode: String(dto.productInfo?.goldToadCode ?? ''),
+    },
+    mappings: Array.isArray(dto.mappings)
+      ? dto.mappings.map((item) => ({
+          sceneType: String(item.sceneType ?? ''),
+          sceneName: String(item.sceneName ?? ''),
+          receiptType: String(item.receiptType ?? ''),
+          receiptName: String(item.receiptName ?? ''),
+        }))
+      : [],
+  };
+};
+
+const toStructuredMarkdown = (answer: ProductConfigAnswer) => {
+  const sections: string[] = [];
+
+  if (answer.summary) {
+    sections.push('### 查询结论', `> ${answer.summary}`);
+  }
+
+  const productInfoRows = [
+    ['环境', answer.productInfo.environment],
+    ['资源编码', answer.productInfo.resourceCode],
+    ['产品编码', answer.productInfo.productCode],
+    ['财务产品码', answer.productInfo.financeCode],
+    ['金蟾产品码', answer.productInfo.goldToadCode],
+  ].filter(([, value]) => Boolean(value));
+
+  if (productInfoRows.length > 0) {
+    sections.push(
+      '### 产品信息',
+      [
+        '| 字段 | 值 |',
+        '| --- | --- |',
+        ...productInfoRows.map(([label, value]) => `| ${label} | ${value} |`),
+      ].join('\n'),
+    );
+  }
+
+  if (answer.mappings.length > 0) {
+    sections.push(
+      '### 场景映射',
+      [
+        '| 场景编码 | 场景名称 | 单据类型编码 | 单据类型名称 |',
+        '| --- | --- | --- | --- |',
+        ...answer.mappings.map(
+          (row) =>
+            `| ${row.sceneType || '-'} | ${row.sceneName || '-'} | ${row.receiptType || '-'} | ${row.receiptName || '-'} |`,
+        ),
+      ].join('\n'),
+    );
+  }
+
+  if (sections.length === 0 && answer.displayText) {
+    sections.push(normalizeMarkdownText(answer.displayText));
+  }
+
+  return sections.join('\n\n');
+};
+
 const formatTime = (timestamp: number) => new Date(timestamp).toLocaleString();
+
+const parseStructuredEvent = (payload: unknown): StructuredChatEvent | null => {
+  if (!payload || typeof payload !== 'object') {
+    return null;
+  }
+
+  const event = payload as { event?: unknown; data?: unknown };
+  if (event.event === 'meta') {
+    const answer = parseStructuredDto(event.data);
+    return answer ? { event: 'meta', data: answer } : null;
+  }
+
+  if (event.event === 'text' && typeof event.data === 'string') {
+    return { event: 'text', data: event.data };
+  }
+
+  if (event.event === 'done' && event.data && typeof event.data === 'object') {
+    return { event: 'done', data: event.data as { rawAnswer?: string } };
+  }
+
+  if (event.event === 'error' && event.data && typeof event.data === 'object') {
+    return { event: 'error', data: event.data as { message?: string } };
+  }
+
+  return null;
+};
 
 const AIAgent = () => {
   const [sessions, setSessions] = useState<ChatSession[]>(() => {
@@ -65,6 +215,7 @@ const AIAgent = () => {
     ];
   });
   const [activeSessionId, setActiveSessionId] = useState(() => sessions[0].id);
+  const [streamTextMap, setStreamTextMap] = useState<Record<string, string>>({});
   const [isChatScrolling, setIsChatScrolling] = useState(false);
   const scrollTimerRef = useRef<number | null>(null);
 
@@ -76,20 +227,10 @@ const AIAgent = () => {
   const messageProps = useMemo(
     () => ({
       assistant: {
-        name: 'AI 助手',
-        avatar: (
-          <span className="ai-agent-avatar ai-agent-avatar-assistant">
-            <ChatIcon size="14px" />
-          </span>
-        ),
+        placement: 'left' as const,
       },
       user: {
-        name: '我',
-        avatar: (
-          <span className="ai-agent-avatar ai-agent-avatar-user">
-            <UserIcon size="14px" />
-          </span>
-        ),
+        placement: 'right' as const,
       },
     }),
     [],
@@ -103,6 +244,7 @@ const AIAgent = () => {
       messages: [],
     };
     setSessions((prev) => [newSession, ...prev]);
+    setStreamTextMap((prev) => ({ ...prev, [newSession.id]: '' }));
     setActiveSessionId(newSession.id);
   };
 
@@ -112,6 +254,7 @@ const AIAgent = () => {
 
   const handleMessageChange = (event: MessageChangeEvent) => {
     const nextMessages = event.detail as ChatMessagesData[];
+
     setSessions((prev) =>
       prev.map((session) =>
         session.id === activeSessionId
@@ -187,7 +330,7 @@ const AIAgent = () => {
           }}
           onMessageChange={handleMessageChange}
           chatServiceConfig={{
-            endpoint: '/api/Chat/ChatStream',
+            endpoint: '/api/Chat/ChatStructured',
             stream: true,
             onRequest: ({ prompt, ...rest }) => ({
               ...rest,
@@ -202,14 +345,49 @@ const AIAgent = () => {
               }),
             }),
             onMessage: (chunk) => {
-              const data = chunk?.data;
-              if (typeof data === 'string') {
-                if (data === '[DONE]') {
+              const event = parseStructuredEvent(chunk);
+              if (!event) {
+                return null;
+              }
+
+              if (event.event === 'meta') {
+                const markdown = toStructuredMarkdown(event.data);
+                if (!markdown) {
                   return null;
                 }
-                const normalized = data.replace(/\r/g, '');
-                return { type: 'text', data: normalized, strategy: 'merge' };
+
+                return {
+                  type: 'markdown',
+                  data: markdown,
+                  strategy: 'merge',
+                };
               }
+
+              if (event.event === 'text') {
+                const normalizedText = normalizeMarkdownText(event.data);
+                const nextStreamText = `${streamTextMap[activeSession.id] || ''}${normalizedText}`;
+                setStreamTextMap((prev) => ({
+                  ...prev,
+                  [activeSession.id]: nextStreamText,
+                }));
+
+                return {
+                  type: 'text',
+                  data: normalizedText,
+                  strategy: 'merge',
+                };
+              }
+
+              if (event.event === 'error') {
+                const message = event.data.message || '请求失败';
+                return {
+                  type: 'markdown',
+                  data: `> 错误：${message}`,
+                  status: 'error',
+                  strategy: 'merge',
+                };
+              }
+
               return null;
             },
           }}

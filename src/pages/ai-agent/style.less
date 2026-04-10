@@ -186,6 +186,9 @@
 }
 
 .ai-agent-chatbot {
+  flex: 1;
+  --td-chat-item-content-gap: 0;
+  --td-chat-item-name-padding-right: 0;
   height: 100%;
   width: 100%;
   min-height: 0;
@@ -193,56 +196,12 @@
   overflow: hidden;
 }
 
-.ai-agent-chatbot::part(messages),
-.ai-agent-chatbot::part(list),
-.ai-agent-chatbot::part(content) {
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
+.ai-agent-chatbot::part(t-chat__item__content__slot) {
+  display: contents;
 }
 
-.ai-agent-chatbot::part(messages)::-webkit-scrollbar,
-.ai-agent-chatbot::part(list)::-webkit-scrollbar,
-.ai-agent-chatbot::part(content)::-webkit-scrollbar {
-  width: 6px;
-}
-
-.ai-agent-chatbot::part(messages)::-webkit-scrollbar-track,
-.ai-agent-chatbot::part(list)::-webkit-scrollbar-track,
-.ai-agent-chatbot::part(content)::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.ai-agent-chatbot::part(messages)::-webkit-scrollbar-thumb,
-.ai-agent-chatbot::part(list)::-webkit-scrollbar-thumb,
-.ai-agent-chatbot::part(content)::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: transparent;
-}
-
-.ai-agent-content:hover .ai-agent-chatbot::part(messages),
-.ai-agent-content:hover .ai-agent-chatbot::part(list),
-.ai-agent-content:hover .ai-agent-chatbot::part(content),
-.ai-agent-content.is-chat-scrolling .ai-agent-chatbot::part(messages),
-.ai-agent-content.is-chat-scrolling .ai-agent-chatbot::part(list),
-.ai-agent-content.is-chat-scrolling .ai-agent-chatbot::part(content) {
-  scrollbar-color: rgba(124, 144, 192, 0.58) transparent;
-}
-
-.ai-agent-content:hover .ai-agent-chatbot::part(messages)::-webkit-scrollbar-thumb,
-.ai-agent-content:hover .ai-agent-chatbot::part(list)::-webkit-scrollbar-thumb,
-.ai-agent-content:hover .ai-agent-chatbot::part(content)::-webkit-scrollbar-thumb,
-.ai-agent-content.is-chat-scrolling .ai-agent-chatbot::part(messages)::-webkit-scrollbar-thumb,
-.ai-agent-content.is-chat-scrolling .ai-agent-chatbot::part(list)::-webkit-scrollbar-thumb,
-.ai-agent-content.is-chat-scrolling .ai-agent-chatbot::part(content)::-webkit-scrollbar-thumb {
-  background: rgba(124, 144, 192, 0.46);
-}
-
-.ai-agent-chatbot::part(sender),
-.ai-agent-chatbot::part(input),
-.ai-agent-chatbot::part(footer) {
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
-  background: var(--td-bg-color-container);
+.ai-agent-chatbot::part(text) {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
