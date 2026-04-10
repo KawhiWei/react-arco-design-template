@@ -81,8 +81,8 @@ const useUserDetail = () => {
                      * @description: 路由格式化将二级路由和一级路由合并生成路由列表
                      */
                     var route = {
-                        path: `/*${menu.path}`,
-                        id: `/*${menu.path}`,
+                        path: menu.path,
+                        id: menu.path,
                         // Component: menu.componentPath ? lazy(modules[`../pages/${menu.componentPath}/index.tsx`]) : ErrorPage,
                         Component: menu.componentPath ? lazyLoad[menu.componentPath] ? lazy(lazyLoad[menu.componentPath]) : ErrorPage : ErrorPage,
                         name: menu.name,

@@ -34,6 +34,7 @@ const AvatarComponent = () => {
 
   const handleClickMenuItem = (dropdownItem: DropdownOption) => {
     if (dropdownItem.value === 'logout') {
+      localStorage.removeItem('token');
       router.navigate('/login');
     }
   };
