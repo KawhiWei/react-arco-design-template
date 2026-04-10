@@ -4,7 +4,9 @@ const { BreadcrumbItem } = Breadcrumb;
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet, useLocation, useMatches } from 'react-router-dom';
 
+import GlobalLoading from '../../../components/global-loading';
 import { getMenuList } from '../../../api/auth';
+import { setPageLoading } from '../../../page-loading';
 
 interface MenuInfo {
     name: string;
@@ -19,6 +21,10 @@ const PublicContent = () => {
     const breadcrumbHeaderRef = useRef<HTMLDivElement | null>(null);
     const contentRef = useRef<HTMLDivElement | null>(null);
     const [contentMaxHeight, setContentMaxHeight] = useState<number>();
+
+    useEffect(() => {
+        setPageLoading(false);
+    }, [pathname]);
 
     useEffect(() => {
         getMenuList().then(res => {
@@ -109,7 +115,7 @@ const PublicContent = () => {
 
     return (
 
-        <Suspense>
+        <Suspense fallback={<GlobalLoading height={contentMaxHeight || 320} />}>
             <div className="layout-content-inner" ref={contentInnerRef}>
                 {breadcrumbItems.length > 0 && (
                     <div className="layout-content-header" ref={breadcrumbHeaderRef}>

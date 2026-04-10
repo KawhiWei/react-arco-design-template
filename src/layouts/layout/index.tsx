@@ -1,30 +1,31 @@
 import './style.less';
 
 import { ChevronLeftIcon, ChevronRightIcon } from 'tdesign-icons-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useLocation, useMatches } from 'react-router-dom';
 
 import AvatarComponent from './avatar';
+import GlobalLoading from '../../components/global-loading';
 import { Layout } from 'tdesign-react';
 import LogoComponent from './logo';
 import PublicContent from './content';
 import PublicHeader from './header';
 import SliderMenu from './side';
 import useUserDetail from '../common/use-user-detail.';
+import { getPageLoading, subscribePageLoading } from '../../page-loading';
+import { applyThemeMode, getThemeMode } from '../../theme';
 
 const { Content, Aside, Header } = Layout;
 
 const PublicLayout = () => {
   const matches = useMatches();
   const { pathname } = useLocation();
+  const pageLoading = useSyncExternalStore(subscribePageLoading, getPageLoading, getPageLoading);
 
   useUserDetail();
 
   const [collapsed, setCollapsed] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    const saved = localStorage.getItem('theme-mode');
-    return saved === 'dark' ? 'dark' : 'light';
-  });
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => getThemeMode());
 
   useEffect(() => {
     const lastRoute = matches[matches.length - 1];
@@ -41,17 +42,13 @@ const PublicLayout = () => {
   const handleChangeTheme = () => {
     const next = theme === 'light' ? 'dark' : 'light';
     setTheme(next);
-    localStorage.setItem('theme-mode', next);
-    if (next === 'dark') {
-      document.documentElement.setAttribute('theme-mode', 'dark');
-    } else {
-      document.documentElement.removeAttribute('theme-mode');
-    }
+    applyThemeMode(next);
   };
 
   return (
 
     <Layout className="layout-container">
+      {pageLoading && <GlobalLoading />}
       <Header className="layout-header">
         <div className="layout-header-left">
           <LogoComponent />

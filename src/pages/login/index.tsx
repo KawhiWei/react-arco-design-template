@@ -8,6 +8,7 @@ import { useLocation } from 'react-router-dom';
 import { mockLogin } from '../../api/login';
 import { router } from '../../router';
 import { getSafeRedirectPath, TOKEN_STORAGE_KEY } from '../../router/auth';
+import { applyThemeMode, getThemeMode } from '../../theme';
 
 type LoginForm = {
   username: string;
@@ -20,10 +21,7 @@ const Login = () => {
   const redirect = getSafeRedirectPath(new URLSearchParams(location.search).get('redirect'));
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-  const [themeMode, setThemeMode] = useState<'light' | 'dark'>(() => {
-    const saved = localStorage.getItem('theme-mode');
-    return saved === 'dark' ? 'dark' : 'light';
-  });
+  const [themeMode, setThemeMode] = useState<'light' | 'dark'>(() => getThemeMode());
 
   useEffect(() => {
     if (localStorage.getItem(TOKEN_STORAGE_KEY)) {
@@ -31,13 +29,7 @@ const Login = () => {
       return;
     }
 
-    if (themeMode === 'dark') {
-      document.documentElement.setAttribute('theme-mode', 'dark');
-      localStorage.setItem('theme-mode', 'dark');
-      return;
-    }
-    document.documentElement.removeAttribute('theme-mode');
-    localStorage.setItem('theme-mode', 'light');
+    applyThemeMode(themeMode);
   }, [redirect, themeMode]);
 
   const handleToggleTheme = () => {

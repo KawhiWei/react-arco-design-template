@@ -4,6 +4,8 @@ import { Area, Column, Line, Pie } from '@ant-design/charts';
 import { useEffect, useMemo, useState } from 'react';
 import { Card, Col, Progress, Row, Space, Tag } from 'tdesign-react';
 
+import { isDarkTheme, subscribeThemeMode } from '../../theme';
+
 type MetricCard = {
   key: string;
   title: string;
@@ -57,21 +59,12 @@ const alerts = [
 ];
 
 const Dashboard = () => {
-  const [isDark, setIsDark] = useState(() => document.documentElement.getAttribute('theme-mode') === 'dark');
+  const [isDark, setIsDark] = useState(() => isDarkTheme());
 
   useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.getAttribute('theme-mode') === 'dark');
+    return subscribeThemeMode((theme) => {
+      setIsDark(theme === 'dark');
     });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['theme-mode'],
-    });
-
-    return () => {
-      observer.disconnect();
-    };
   }, []);
 
   const chartColors = useMemo(

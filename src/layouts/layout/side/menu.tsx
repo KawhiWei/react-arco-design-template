@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { Menu, MenuValue } from "tdesign-react";
 import { getMenuList } from "../../../api/auth";
+import { setPageLoading } from '../../../page-loading';
 import IconComponent from "../../common/icon";
 
 const { MenuItem, SubMenu } = Menu;
@@ -96,6 +97,15 @@ const MenuComponent = (props: IProp) => {
         setUserExpanded(keys.map(String));
     };
 
+    const navigateWithLoading = async (nextPath: string) => {
+        if (nextPath === pathname) {
+            return;
+        }
+
+        setPageLoading(true);
+        navigate(nextPath);
+    };
+
     const onMenuChange = (value: MenuValue) => {
         const nextPath = String(value);
         const queue: MenuItemData[] = [...treeMenus];
@@ -106,7 +116,7 @@ const MenuComponent = (props: IProp) => {
             }
             if (node.path === nextPath) {
                 if (node.children.length === 0) {
-                    navigate(nextPath);
+                    void navigateWithLoading(nextPath);
                 }
                 return;
             }
@@ -115,7 +125,7 @@ const MenuComponent = (props: IProp) => {
             }
         }
 
-        navigate(nextPath);
+        void navigateWithLoading(nextPath);
     };
 
     const getMenuIcon = (iconName: string | null) => {
