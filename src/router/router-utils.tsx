@@ -2,7 +2,7 @@ import { RouteObject } from 'react-router-dom';
 import { router } from '.';
 
 export const toLoginPage = () => {
-    router.navigate('/user/login');
+    router.navigate('/login');
 }
 
 function findNodeByPath(routes: RouteObject[], path: string) {

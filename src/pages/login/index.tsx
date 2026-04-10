@@ -3,9 +3,11 @@ import './style.less';
 import { FingerprintIcon, LockOnIcon, LoginIcon, MoonIcon, QrcodeIcon, SunnyIcon, UserIcon, UserVisibleIcon } from 'tdesign-icons-react';
 import { Button, Checkbox, Form, Input, MessagePlugin, type SubmitContext } from 'tdesign-react';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { mockLogin } from '../../api/login';
 import { router } from '../../router';
+import { getSafeRedirectPath, TOKEN_STORAGE_KEY } from '../../router/auth';
 
 type LoginForm = {
   username: string;
@@ -14,6 +16,8 @@ type LoginForm = {
 };
 
 const Login = () => {
+  const location = useLocation();
+  const redirect = getSafeRedirectPath(new URLSearchParams(location.search).get('redirect'));
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>(() => {
@@ -22,6 +26,11 @@ const Login = () => {
   });
 
   useEffect(() => {
+    if (localStorage.getItem(TOKEN_STORAGE_KEY)) {
+      router.navigate(redirect || '/dashboard', { replace: true });
+      return;
+    }
+
     if (themeMode === 'dark') {
       document.documentElement.setAttribute('theme-mode', 'dark');
       localStorage.setItem('theme-mode', 'dark');
@@ -29,7 +38,7 @@ const Login = () => {
     }
     document.documentElement.removeAttribute('theme-mode');
     localStorage.setItem('theme-mode', 'light');
-  }, [themeMode]);
+  }, [redirect, themeMode]);
 
   const handleToggleTheme = () => {
     setThemeMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
@@ -48,11 +57,14 @@ const Login = () => {
         password: values.password,
       });
 
-      localStorage.setItem('token', result.token);
+      localStorage.setItem(TOKEN_STORAGE_KEY, result.token);
       localStorage.setItem('userInfo', JSON.stringify(result.userInfo));
       localStorage.setItem('rememberLogin', values.remember ? '1' : '0');
-      MessagePlugin.success(`欢迎回来，${result.userInfo.name}`);
-      router.navigate('/dashboard');
+
+      const redirectPath = (location.state as { from?: { pathname?: string; search?: string; hash?: string } } | null)?.from;
+      const nextPath = redirect || (redirectPath?.pathname ? `${redirectPath.pathname}${redirectPath.search || ''}${redirectPath.hash || ''}` : '/dashboard');
+
+      router.navigate(nextPath, { replace: true });
     } catch (error) {
       MessagePlugin.error(error instanceof Error ? error.message : '登录失败');
     } finally {

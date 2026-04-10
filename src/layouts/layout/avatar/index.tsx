@@ -3,6 +3,7 @@ import type { DropdownOption } from 'tdesign-react';
 import { PoweroffIcon, UserIcon } from 'tdesign-icons-react';
 
 import { router } from "../../../router";
+import { TOKEN_STORAGE_KEY } from '../../../router/auth';
 
 const AvatarComponent = () => {
   const iconStyle: React.CSSProperties = {
@@ -34,8 +35,9 @@ const AvatarComponent = () => {
 
   const handleClickMenuItem = (dropdownItem: DropdownOption) => {
     if (dropdownItem.value === 'logout') {
-      localStorage.removeItem('token');
-      router.navigate('/login');
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      localStorage.removeItem('userInfo');
+      router.navigate('/login', { replace: true });
     }
   };
 

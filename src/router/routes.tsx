@@ -1,24 +1,33 @@
-import { Navigate, RouteObject } from "react-router-dom";
+import { RouteObject } from 'react-router-dom';
 
 import ErrorPage from '../components/error';
+import PublicLayout from '../layouts/layout';
 import Login from '../pages/login';
-import PublicLayout from "../layouts/layout";
+import { HomeRedirect, RedirectIfAuthenticated, RequireAuth } from './auth';
 
 export const routes: RouteObject[] = [
   {
-    path: '/login',
-    Component: Login,
+    element: <RedirectIfAuthenticated />,
+    children: [
+      {
+        path: '/login',
+        Component: Login,
+      },
+    ],
   },
   {
     path: '/',
-    element: (
-      <Navigate to="/dashboard" />
-    ),
+    element: <HomeRedirect />,
   },
   {
-    path: '*',
-    Component: PublicLayout,
-    children: [],
-    errorElement: <ErrorPage />
+    element: <RequireAuth />,
+    children: [
+      {
+        path: '*',
+        Component: PublicLayout,
+        children: [],
+        errorElement: <ErrorPage />,
+      },
+    ],
   },
-]
+];
